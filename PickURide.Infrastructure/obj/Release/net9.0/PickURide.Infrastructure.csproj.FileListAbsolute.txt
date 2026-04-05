@@ -1,0 +1,15 @@
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.deps.json
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.dll
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.pdb
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Application.dll
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Application.pdb
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.csproj.AssemblyReference.cache
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.AssemblyInfoInputs.cache
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.AssemblyInfo.cs
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.csproj.CoreCompileInputs.cache
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURid.A5F1CA58.Up2Date
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.dll
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\refint\PickURide.Infrastructure.dll
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.pdb
+D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\ref\PickURide.Infrastructure.dll

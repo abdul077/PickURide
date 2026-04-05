@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PickURide - Admin & Driver Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #28a745;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 200px);
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.admin {
+            align-items: flex-end;
+        }
+
+        .message.driver {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.admin .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.driver .message-bubble {
+            background: #e9ecef;
+            color: #212529;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-info {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 24px;
+            font-size: 14px;
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .chat-input-area button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .chat-input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .chat-input-area button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .conversation-list {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .conversation-list h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .conversation-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .conversation-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .conversation-item.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .log-area {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .log-area h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .log-content {
+            background: #212529;
+            color: #28a745;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .log-entry.error {
+            color: #dc3545;
+        }
+
+        .log-entry.warning {
+            color: #ffc107;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 PickURide - Admin & Driver Chat</h1>
+            <p>Real-time communication between admins and drivers</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Disconnected</span>
+            </div>
+            <div>
+                <span id="connectionInfo"></span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="form-group">
+                    <label for="roleSelect">Your Role</label>
+                    <select id="roleSelect">
+                        <option value="Admin">Admin</option>
+                        <option value="Driver">Driver</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="driverIdInput">Driver ID (GUID)</label>
+                    <input type="text" id="driverIdInput" placeholder="Enter Driver GUID">
+                </div>
+
+                <div class="form-group">
+                    <label for="senderIdInput">Your ID (GUID)</label>
+                    <input type="text" id="senderIdInput" placeholder="Enter your ID">
+                </div>
+
+                <button class="btn btn-primary" id="connectBtn" onclick="connectToChat()">Connect</button>
+                <button class="btn btn-secondary" id="disconnectBtn" onclick="disconnectFromChat()" disabled>Disconnect</button>
+                <button class="btn btn-secondary" id="loadHistoryBtn" onclick="loadHistory()" disabled>Load History</button>
+                <button class="btn btn-secondary" id="loadConversationsBtn" onclick="loadConversationList()" disabled>Load Conversations</button>
+
+                <div class="conversation-list" id="conversationListContainer" style="display: none;">
+                    <h3>Active Conversations</h3>
+                    <div id="conversationList"></div>
+                </div>
+
+                <div class="log-area">
+                    <h3>Connection Log</h3>
+                    <div class="log-content" id="logContent"></div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">
+                    Select a driver and connect to start chatting
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <p>No messages yet. Connect and start a conversation!</p>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message..." disabled onkeypress="handleKeyPress(event)">
+                    <button id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hubUrl = window.location.origin.replace(':4200', ':7008') + '/ridechathub';
+        let connection = null;
+        let currentDriverId = null;
+        let currentRole = null;
+
+        // Get token from localStorage (optional - SignalR no longer requires JWT)
+        function getToken() {
+            return localStorage.getItem('token') || '';
+        }
+
+        function log(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContent.appendChild(entry);
+            logContent.scrollTop = logContent.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(connected) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
+            const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+            const loadConversationsBtn = document.getElementById('loadConversationsBtn');
+
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendBtn.disabled = false;
+                messageInput.disabled = false;
+                loadHistoryBtn.disabled = false;
+                loadConversationsBtn.disabled = false;
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendBtn.disabled = true;
+                messageInput.disabled = true;
+                loadHistoryBtn.disabled = true;
+                loadConversationsBtn.disabled = true;
+            }
+        }
+
+        function appendMessage(message, senderRole, senderId, timestamp) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Remove empty state if present
+            const emptyState = chatMessages.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${senderRole.toLowerCase()}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = message;
+
+            const info = document.createElement('div');
+            info.className = 'message-info';
+            const date = timestamp ? new Date(timestamp) : new Date();
+            info.textContent = `${senderRole} • ${date.toLocaleTimeString()}`;
+
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(info);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function connectToChat() {
+            const driverId = document.getElementById('driverIdInput').value.trim();
+            const senderId = document.getElementById('senderIdInput').value.trim();
+            const role = document.getElementById('roleSelect').value;
+
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            if (!senderId) {
+                alert('Please enter your ID');
+                return;
+            }
+
+            const token = getToken();
+            // Token is optional - SignalR no longer requires JWT authentication
+            if (!token) {
+                log('Note: No token found. SignalR connection will work without authentication.', 'info');
+            }
+
+            try {
+                log(`Connecting to ${hubUrl}...`);
+                updateStatus(false);
+
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl(hubUrl, {
+                        accessTokenFactory: () => token,
+                        skipNegotiation: false,
+                        transport: signalR.HttpTransportType.WebSockets | 
+                                   signalR.HttpTransportType.ServerSentEvents | 
+                                   signalR.HttpTransportType.LongPolling
+                    })
+                    .withAutomaticReconnect({
+                        nextRetryDelayInMilliseconds: retryContext => {
+                            if (retryContext.previousRetryCount === 0) return 0;
+                            if (retryContext.previousRetryCount === 1) return 2000;
+                            if (retryContext.previousRetryCount === 2) return 10000;
+                            return 30000;
+                        }
+                    })
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                // Register event handlers
+                connection.on('ReceiveDriverAdminMessage', (payload) => {
+                    log(`Received message from ${payload.senderRole}`);
+                    appendMessage(
+                        payload.message || payload.Message,
+                        payload.senderRole || payload.SenderRole,
+                        payload.senderId || payload.SenderId,
+                        payload.dateTime || payload.DateTime
+                    );
+                });
+
+                connection.on('ReceiveDriverAdminChatHistory', (history) => {
+                    log(`Received chat history: ${history.length} messages`);
+                    const chatMessages = document.getElementById('chatMessages');
+                    chatMessages.innerHTML = '';
+                    
+                    if (history.length === 0) {
+                        chatMessages.innerHTML = `
+                            <div class="empty-state">
+                                <p>No messages in history</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    history.forEach(msg => {
+                        appendMessage(
+                            msg.message || msg.Message,
+                            msg.senderRole || msg.SenderRole,
+                            msg.senderId || msg.SenderId,
+                            msg.dateTime || msg.DateTime
+                        );
+                    });
+                });
+
+                connection.on('ReceiveDriverAdminConversationList', (list) => {
+                    log(`Received conversation list: ${list.length} conversations`);
+                    displayConversationList(list);
+                });
+
+                connection.onreconnecting(() => {
+                    log('Reconnecting...', 'warning');
+                    updateStatus(false);
+                });
+
+                connection.onreconnected(() => {
+                    log('Reconnected successfully');
+                    updateStatus(true);
+                    joinGroups();
+                });
+
+                connection.onclose(() => {
+                    log('Connection closed', 'error');
+                    updateStatus(false);
+                });
+
+                await connection.start();
+                log('Connected successfully!');
+                updateStatus(true);
+                currentDriverId = driverId;
+                currentRole = role;
+
+                // Join appropriate groups
+                await joinGroups();
+
+                // Update chat header
+                document.getElementById('chatHeader').textContent = 
+                    `Chatting as ${role} with Driver: ${driverId.substring(0, 8)}...`;
+
+            } catch (err) {
+                log(`Connection failed: ${err.message}`, 'error');
+                updateStatus(false);
+                alert(`Failed to connect: ${err.message}`);
+            }
+        }
+
+        async function joinGroups() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                return;
+            }
+
+            const driverId = document.getElementById('driverIdInput').value.trim();
+            const role = document.getElementById('roleSelect').value;
+
+            try {
+                // Join driver support group
+                if (driverId) {
+                    await connection.invoke('JoinDriverSupport', driverId);
+                    log(`Joined driver support group: ${driverId}`);
+                }
+
+                // Admins should join admin dashboard
+                if (role === 'Admin') {
+                    await connection.invoke('JoinAdminDashboard');
+                    log('Joined admin dashboard');
+                    document.getElementById('conversationListContainer').style.display = 'block';
+                    await loadConversationList();
+                }
+            } catch (err) {
+                log(`Failed to join groups: ${err.message}`, 'error');
+            }
+        }
+
+        async function disconnectFromChat() {
+            if (connection) {
+                try {
+                    await connection.stop();
+                    log('Disconnected');
+                    updateStatus(false);
+                    currentDriverId = null;
+                    currentRole = null;
+                    document.getElementById('chatHeader').textContent = 'Disconnected';
+                } catch (err) {
+                    log(`Error disconnecting: ${err.message}`, 'error');
+                }
+            }
+        }
+
+        async function sendMessage() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Not connected to chat');
+                return;
+            }
+
+            const driverId = document.getElementById('driverIdInput').value.trim();
+            const senderId = document.getElementById('senderIdInput').value.trim();
+            const role = document.getElementById('roleSelect').value;
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            if (!driverId || !senderId) {
+                alert('Please enter Driver ID and Your ID');
+                return;
+            }
+
+            try {
+                await connection.invoke('SendDriverAdminMessage', driverId, senderId, role, message);
+                log(`Sent message: ${message}`);
+                appendMessage(message, role, senderId, new Date().toISOString());
+                messageInput.value = '';
+            } catch (err) {
+                log(`Failed to send message: ${err.message}`, 'error');
+                alert(`Failed to send message: ${err.message}`);
+            }
+        }
+
+        async function loadHistory() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Not connected to chat');
+                return;
+            }
+
+            const driverId = document.getElementById('driverIdInput').value.trim();
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                log('Loading chat history...');
+                await connection.invoke('GetDriverAdminChatHistory', driverId);
+            } catch (err) {
+                log(`Failed to load history: ${err.message}`, 'error');
+                alert(`Failed to load history: ${err.message}`);
+            }
+        }
+
+        async function loadConversationList() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                return;
+            }
+
+            try {
+                log('Loading conversation list...');
+                await connection.invoke('GetDriverAdminConversationList');
+            } catch (err) {
+                log(`Failed to load conversations: ${err.message}`, 'error');
+            }
+        }
+
+        function displayConversationList(conversations) {
+            const container = document.getElementById('conversationList');
+            container.innerHTML = '';
+
+            if (!conversations || conversations.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; font-size: 12px;">No conversations yet</p>';
+                return;
+            }
+
+            conversations.forEach(conv => {
+                const item = document.createElement('div');
+                item.className = 'conversation-item';
+                item.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 4px;">${conv.driverName || conv.DriverName || 'Unknown Driver'}</div>
+                    <div style="font-size: 11px; color: #6c757d;">
+                        ${conv.lastMessage || conv.LastMessage || 'No messages'}
+                    </div>
+                `;
+                item.onclick = () => {
+                    document.getElementById('driverIdInput').value = conv.driverId || conv.DriverId;
+                    loadHistory();
+                };
+                container.appendChild(item);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize
+        log('Page loaded. Ready to connect.');
+        updateStatus(false);
+    </script>
+</body>
+</html>
+

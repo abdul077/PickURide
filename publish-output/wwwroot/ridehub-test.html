@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideHub Test - PickURide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #f5576c;
+            border-bottom: 3px solid #f5576c;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #f5576c;
+        }
+
+        .section h2 {
+            color: #f5576c;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #f5576c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e04a5f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-left: 3px solid #f5576c;
+            padding-left: 12px;
+            word-wrap: break-word;
+        }
+
+        .log-entry.success {
+            border-left-color: #28a745;
+            color: #90ee90;
+        }
+
+        .log-entry.error {
+            border-left-color: #dc3545;
+            color: #ff6b6b;
+        }
+
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            color: #7dd3fc;
+        }
+
+        .log-entry.chat {
+            border-left-color: #f093fb;
+            color: #ffb3ff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+
+        .messages-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .message.sender {
+            background: #e3f2fd;
+            margin-left: 20px;
+        }
+
+        .message.receiver {
+            background: #f1f8e9;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 RideHub Test</h1>
+            <p>Test Ride Chat, Location, Payment & More via SignalR</p>
+        </div>
+
+        <div class="content">
+            <!-- Connection Status -->
+            <div class="section">
+                <h2>Connection Status</h2>
+                <div id="status" class="status disconnected">Disconnected</div>
+                <button id="connectBtn" class="btn btn-success" onclick="connect()">Connect</button>
+                <button id="disconnectBtn" class="btn btn-danger" onclick="disconnect()" disabled>Disconnect</button>
+            </div>
+
+            <!-- Connection Settings -->
+            <div class="section">
+                <h2>Connection Settings</h2>
+                <div class="form-group">
+                    <label for="hubUrl">Hub URL:</label>
+                    <input type="text" id="hubUrl" value="http://localhost:5192/rideHub" placeholder="http://localhost:5192/rideHub">
+                </div>
+                <div class="form-group">
+                    <label for="userId">User ID (for auto-join on connect):</label>
+                    <input type="text" id="userId" placeholder="Optional: User ID">
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('chat')">💬 Chat</button>
+                <button class="tab" onclick="switchTab('location')">📍 Location</button>
+                <button class="tab" onclick="switchTab('payment')">💳 Payment</button>
+                <button class="tab" onclick="switchTab('groups')">👥 Groups</button>
+                <button class="tab" onclick="switchTab('admin')">🛡️ Admin</button>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="chat-tab" class="tab-content active">
+                <div class="section">
+                    <h2>Ride Chat</h2>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="chatRideId">Ride ID:</label>
+                            <input type="text" id="chatRideId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="chatSenderId">Sender ID:</label>
+                            <input type="text" id="chatSenderId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="chatSenderRole">Sender Role:</label>
+                            <select id="chatSenderRole">
+                                <option value="Rider">Rider</option>
+                                <option value="Driver">Driver</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="chatMessage">Message:</label>
+                        <textarea id="chatMessage" placeholder="Type your message..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+                    <button class="btn btn-primary" onclick="getChatHistory()">Get Chat History</button>
+                    <button class="btn btn-primary" onclick="joinRideChat()">Join Ride Chat</button>
+                    <button class="btn btn-danger" onclick="leaveRideChat()">Leave Ride Chat</button>
+                </div>
+                <div class="section">
+                    <h2>Chat Messages</h2>
+                    <div id="messages" class="messages-container"></div>
+                </div>
+            </div>
+
+            <!-- Location Tab -->
+            <div id="location-tab" class="tab-content">
+                <div class="section">
+                    <h2>Update Driver Location</h2>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="locRideId">Ride ID:</label>
+                            <input type="text" id="locRideId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="locDriverId">Driver ID:</label>
+                            <input type="text" id="locDriverId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="locDriverName">Driver Name:</label>
+                            <input type="text" id="locDriverName" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="locLatitude">Latitude:</label>
+                            <input type="number" id="locLatitude" step="0.000001" placeholder="43.6532" value="43.6532">
+                        </div>
+                        <div class="form-group">
+                            <label for="locLongitude">Longitude:</label>
+                            <input type="number" id="locLongitude" step="0.000001" placeholder="-79.3832" value="-79.3832">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="updateLocation()">Update Location</button>
+                    <button class="btn btn-primary" onclick="updateLocationWithName()">Update Location (with Name)</button>
+                    <button class="btn btn-primary" onclick="getLiveLocations()">Get Live Locations</button>
+                    <button class="btn btn-primary" onclick="getNearbyDrivers()">Get Nearby Drivers</button>
+                    <button class="btn btn-primary" onclick="startAutoLocation()">Start Auto Update</button>
+                    <button class="btn btn-danger" onclick="stopAutoLocation()">Stop Auto Update</button>
+                </div>
+                <div class="section">
+                    <h2>Nearby Drivers</h2>
+                    <div class="form-group">
+                        <label for="nearbyLat">Your Latitude:</label>
+                        <input type="number" id="nearbyLat" step="0.000001" placeholder="43.6532" value="43.6532">
+                    </div>
+                    <div class="form-group">
+                        <label for="nearbyLng">Your Longitude:</label>
+                        <input type="number" id="nearbyLng" step="0.000001" placeholder="-79.3832" value="-79.3832">
+                    </div>
+                    <div class="form-group">
+                        <label for="nearbyRadius">Radius (km):</label>
+                        <input type="number" id="nearbyRadius" step="0.1" value="5" min="0.1" max="50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Tab -->
+            <div id="payment-tab" class="tab-content">
+                <div class="section">
+                    <h2>Send Payment Success Notification</h2>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="payDriverId">Driver ID:</label>
+                            <input type="text" id="payDriverId" placeholder="Driver ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="payUserId">User ID:</label>
+                            <input type="text" id="payUserId" placeholder="User ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="payMessage">Message:</label>
+                            <input type="text" id="payMessage" value="Payment completed successfully!" placeholder="Payment message">
+                        </div>
+                        <div class="form-group">
+                            <label for="payTipAmount">Tip Amount:</label>
+                            <input type="number" id="payTipAmount" step="0.01" value="5.00" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="payTotalAmount">Total Amount:</label>
+                            <input type="number" id="payTotalAmount" step="0.01" value="25.00" placeholder="0.00">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendPaymentSuccess()">Send Payment Success</button>
+                </div>
+            </div>
+
+            <!-- Groups Tab -->
+            <div id="groups-tab" class="tab-content">
+                <div class="section">
+                    <h2>Group Management</h2>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="groupRideId">Ride ID:</label>
+                            <input type="text" id="groupRideId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="groupDriverId">Driver ID:</label>
+                            <input type="text" id="groupDriverId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                    </div>
+                    <h3>Ride Groups</h3>
+                    <button class="btn btn-success" onclick="subscribeToRide()">Subscribe to Ride</button>
+                    <button class="btn btn-danger" onclick="unsubscribeFromRide()">Unsubscribe from Ride</button>
+                    <h3 style="margin-top: 20px;">Driver Groups</h3>
+                    <button class="btn btn-success" onclick="subscribeDriver()">Subscribe Driver</button>
+                    <button class="btn btn-danger" onclick="unsubscribeDriver()">Unsubscribe Driver</button>
+                    <h3 style="margin-top: 20px;">Location Groups</h3>
+                    <button class="btn btn-success" onclick="joinLocationGroup()">Join Location Group</button>
+                    <button class="btn btn-danger" onclick="leaveLocationGroup()">Leave Location Group</button>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="admin-tab" class="tab-content">
+                <div class="section">
+                    <h2>Admin Dashboard</h2>
+                    <button class="btn btn-primary" onclick="joinAdminDashboard()">Join Admin Dashboard</button>
+                    <button class="btn btn-primary" onclick="getDriverAdminConversationList()">Get Conversation List</button>
+                </div>
+                <div class="section">
+                    <h2>Driver Support Chat</h2>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="adminDriverId">Driver ID:</label>
+                            <input type="text" id="adminDriverId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminSenderId">Sender ID:</label>
+                            <input type="text" id="adminSenderId" placeholder="00000000-0000-0000-0000-000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminSenderRole">Sender Role:</label>
+                            <select id="adminSenderRole">
+                                <option value="Admin">Admin</option>
+                                <option value="Driver">Driver</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminMessage">Message:</label>
+                        <textarea id="adminMessage" placeholder="Type admin message..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="joinDriverSupport()">Join Driver Support</button>
+                    <button class="btn btn-primary" onclick="sendDriverAdminMessage()">Send Admin Message</button>
+                    <button class="btn btn-primary" onclick="getDriverAdminChatHistory()">Get Admin Chat History</button>
+                    <button class="btn btn-danger" onclick="leaveDriverSupport()">Leave Driver Support</button>
+                </div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="section">
+                <h2>Event Log</h2>
+                <button class="btn clear-btn" onclick="clearLog()">Clear Log</button>
+                <div id="log" class="log-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let connection = null;
+        let autoLocationInterval = null;
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        function updateStatus(status, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = message;
+            
+            document.getElementById('connectBtn').disabled = status === 'connected' || status === 'connecting';
+            document.getElementById('disconnectBtn').disabled = status === 'disconnected';
+        }
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function connect() {
+            const hubUrl = document.getElementById('hubUrl').value;
+            const userId = document.getElementById('userId').value;
+            
+            if (!hubUrl) {
+                alert('Please enter a Hub URL');
+                return;
+            }
+
+            try {
+                updateStatus('connecting', 'Connecting...');
+                log(`Connecting to ${hubUrl}...`, 'info');
+
+                let url = hubUrl;
+                if (userId) {
+                    url += `?userId=${userId}`;
+                }
+
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl(url)
+                    .build();
+
+                // Register all event handlers
+                registerEventHandlers();
+
+                await connection.start();
+                updateStatus('connected', 'Connected');
+                log('✅ Successfully connected to RideHub!', 'success');
+            } catch (error) {
+                updateStatus('disconnected', 'Connection Failed');
+                log(`❌ Connection error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        function registerEventHandlers() {
+            // Chat events
+            connection.on("ReceiveMessage", (response) => {
+                log(`💬 Message Received: ${JSON.stringify(response)}`, 'chat');
+                addMessage(response, 'receiver');
+            });
+
+            connection.on("ReceiveRideChatHistory", (messages) => {
+                log(`📜 Chat History: ${JSON.stringify(messages)}`, 'info');
+                document.getElementById('messages').innerHTML = '';
+                messages.forEach(msg => addMessage(msg, 'receiver'));
+            });
+
+            // Location events
+            connection.on("ReceiveLocation", (payload) => {
+                log(`📍 Location Received: ${JSON.stringify(payload)}`, 'success');
+            });
+
+            connection.on("ReceiveAllLocation", (payload) => {
+                log(`📍 All Location Received: ${JSON.stringify(payload)}`, 'success');
+            });
+
+            connection.on("ReceiveRideLocation", (payload) => {
+                log(`📍 Ride Location Received: ${JSON.stringify(payload)}`, 'success');
+            });
+
+            connection.on("ReceiveLiveLocations", (locations) => {
+                log(`📍 Live Locations: ${JSON.stringify(locations)}`, 'info');
+            });
+
+            connection.on("JoinedLocationGroup", (rideId) => {
+                log(`✅ Joined Location Group: ${rideId}`, 'success');
+            });
+
+            connection.on("LeftLocationGroup", (rideId) => {
+                log(`❌ Left Location Group: ${rideId}`, 'info');
+            });
+
+            // Payment events
+            connection.on("ReceivePaymentSuccess", (payload) => {
+                log(`💳 Payment Success: ${JSON.stringify(payload)}`, 'success');
+            });
+
+            // Admin events
+            connection.on("ReceiveDriverAdminMessage", (payload) => {
+                log(`🛡️ Admin Message: ${JSON.stringify(payload)}`, 'chat');
+            });
+
+            connection.on("ReceiveDriverAdminChatHistory", (history) => {
+                log(`📜 Admin Chat History: ${JSON.stringify(history)}`, 'info');
+            });
+
+            connection.on("ReceiveDriverAdminConversationList", (list) => {
+                log(`📋 Conversation List: ${JSON.stringify(list)}`, 'info');
+            });
+
+            connection.on("ReceiveDriverAdminConversationSummary", (summary) => {
+                log(`📊 Conversation Summary: ${JSON.stringify(summary)}`, 'info');
+            });
+
+            connection.on("DriverAdminMessageSummary", (summary) => {
+                log(`📝 Message Summary: ${JSON.stringify(summary)}`, 'info');
+            });
+
+            connection.onclose(() => {
+                updateStatus('disconnected', 'Disconnected');
+                log('Connection closed', 'error');
+            });
+        }
+
+        function addMessage(msg, type) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <strong>${msg.SenderRole || 'Unknown'}:</strong> ${msg.Message || msg.message || ''}<br>
+                <small>${new Date(msg.DateTime || msg.dateTime || Date.now()).toLocaleString()}</small>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function disconnect() {
+            if (connection) {
+                stopAutoLocation();
+                await connection.stop();
+                connection = null;
+                updateStatus('disconnected', 'Disconnected');
+                log('Disconnected from RideHub', 'info');
+            }
+        }
+
+        // Chat functions
+        async function sendMessage() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('chatRideId').value;
+            const senderId = document.getElementById('chatSenderId').value;
+            const senderRole = document.getElementById('chatSenderRole').value;
+            const message = document.getElementById('chatMessage').value;
+
+            if (!rideId || !senderId || !message) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await connection.invoke("SendMessage", rideId, senderId, message, senderRole);
+                log(`📤 Sent message: ${message}`, 'chat');
+                addMessage({ SenderRole: senderRole, Message: message, DateTime: new Date() }, 'sender');
+                document.getElementById('chatMessage').value = '';
+            } catch (error) {
+                log(`❌ Error sending message: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function getChatHistory() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('chatRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("GetRideChatHistory", rideId);
+            } catch (error) {
+                log(`❌ Error getting chat history: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function joinRideChat() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('chatRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("JoinRideChat", rideId);
+                log(`📤 Joined ride chat: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error joining chat: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function leaveRideChat() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('chatRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("LeaveRideChat", rideId);
+                log(`📤 Left ride chat: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error leaving chat: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Location functions
+        async function updateLocation() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('locRideId').value;
+            const driverId = document.getElementById('locDriverId').value;
+            const latitude = parseFloat(document.getElementById('locLatitude').value);
+            const longitude = parseFloat(document.getElementById('locLongitude').value);
+
+            if (!rideId || !driverId || isNaN(latitude) || isNaN(longitude)) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await connection.invoke("UpdateLocation", rideId, driverId, latitude, longitude);
+                log(`📤 Sent location update`, 'info');
+            } catch (error) {
+                log(`❌ Error updating location: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function updateLocationWithName() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('locRideId').value;
+            const driverId = document.getElementById('locDriverId').value;
+            const driverName = document.getElementById('locDriverName').value;
+            const latitude = parseFloat(document.getElementById('locLatitude').value);
+            const longitude = parseFloat(document.getElementById('locLongitude').value);
+
+            if (!rideId || !driverId || !driverName || isNaN(latitude) || isNaN(longitude)) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await connection.invoke("UpdateLocationWithDriverName", rideId, driverId, driverName, latitude, longitude);
+                log(`📤 Sent location update with name`, 'info');
+            } catch (error) {
+                log(`❌ Error updating location: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function getLiveLocations() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            try {
+                await connection.invoke("GetLiveLocations");
+            } catch (error) {
+                log(`❌ Error getting live locations: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function getNearbyDrivers() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const lat = parseFloat(document.getElementById('nearbyLat').value);
+            const lng = parseFloat(document.getElementById('nearbyLng').value);
+            const radius = parseFloat(document.getElementById('nearbyRadius').value);
+
+            if (isNaN(lat) || isNaN(lng) || isNaN(radius)) {
+                alert('Please enter valid coordinates and radius');
+                return;
+            }
+
+            try {
+                const result = await connection.invoke("GetNearbyDrivers", lat, lng, radius);
+                log(`📍 Found ${result.length} nearby drivers`, 'success');
+            } catch (error) {
+                log(`❌ Error getting nearby drivers: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        function startAutoLocation() {
+            if (autoLocationInterval) {
+                return;
+            }
+
+            const rideId = document.getElementById('locRideId').value;
+            const driverId = document.getElementById('locDriverId').value;
+
+            if (!rideId || !driverId) {
+                alert('Please enter Ride ID and Driver ID first');
+                return;
+            }
+
+            let lat = parseFloat(document.getElementById('locLatitude').value) || 43.6532;
+            let lng = parseFloat(document.getElementById('locLongitude').value) || -79.3832;
+
+            autoLocationInterval = setInterval(() => {
+                lat += (Math.random() - 0.5) * 0.001;
+                lng += (Math.random() - 0.5) * 0.001;
+                
+                document.getElementById('locLatitude').value = lat.toFixed(6);
+                document.getElementById('locLongitude').value = lng.toFixed(6);
+                
+                updateLocation();
+            }, 2000);
+
+            log('🔄 Auto-location update started', 'info');
+        }
+
+        function stopAutoLocation() {
+            if (autoLocationInterval) {
+                clearInterval(autoLocationInterval);
+                autoLocationInterval = null;
+                log('⏹️ Auto-location update stopped', 'info');
+            }
+        }
+
+        // Payment functions
+        async function sendPaymentSuccess() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('payDriverId').value;
+            const userId = document.getElementById('payUserId').value;
+            const message = document.getElementById('payMessage').value;
+            const tipAmount = parseFloat(document.getElementById('payTipAmount').value);
+            const totalAmount = parseFloat(document.getElementById('payTotalAmount').value);
+
+            if (!driverId || !userId || !message || isNaN(tipAmount) || isNaN(totalAmount)) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await connection.invoke("SendPaymentSuccess", driverId, userId, message, tipAmount, totalAmount);
+                log(`📤 Sent payment success notification`, 'success');
+            } catch (error) {
+                log(`❌ Error sending payment: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Group functions
+        async function subscribeToRide() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('groupRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("SubscribeToRide", rideId);
+                log(`📤 Subscribed to ride: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error subscribing: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function unsubscribeFromRide() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('groupRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("UnsubscribeFromRide", rideId);
+                log(`📤 Unsubscribed from ride: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error unsubscribing: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function subscribeDriver() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('groupDriverId').value;
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("SubscribeDriver", driverId);
+                log(`📤 Subscribed to driver: ${driverId}`, 'info');
+            } catch (error) {
+                log(`❌ Error subscribing: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function unsubscribeDriver() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('groupDriverId').value;
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("UnsubscribeDriver", driverId);
+                log(`📤 Unsubscribed from driver: ${driverId}`, 'info');
+            } catch (error) {
+                log(`❌ Error unsubscribing: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function joinLocationGroup() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('groupRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("JoinLocationGroup", rideId);
+                log(`📤 Joined location group: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error joining location group: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function leaveLocationGroup() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const rideId = document.getElementById('groupRideId').value;
+            if (!rideId) {
+                alert('Please enter a Ride ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("LeaveLocationGroup", rideId);
+                log(`📤 Left location group: ${rideId}`, 'info');
+            } catch (error) {
+                log(`❌ Error leaving location group: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Admin functions
+        async function joinAdminDashboard() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            try {
+                await connection.invoke("JoinAdminDashboard");
+                log(`📤 Joined admin dashboard`, 'info');
+            } catch (error) {
+                log(`❌ Error joining admin dashboard: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function joinDriverSupport() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('adminDriverId').value;
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("JoinDriverSupport", driverId);
+                log(`📤 Joined driver support: ${driverId}`, 'info');
+            } catch (error) {
+                log(`❌ Error joining driver support: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function leaveDriverSupport() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('adminDriverId').value;
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("LeaveDriverSupport", driverId);
+                log(`📤 Left driver support: ${driverId}`, 'info');
+            } catch (error) {
+                log(`❌ Error leaving driver support: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function sendDriverAdminMessage() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('adminDriverId').value;
+            const senderId = document.getElementById('adminSenderId').value;
+            const senderRole = document.getElementById('adminSenderRole').value;
+            const message = document.getElementById('adminMessage').value;
+
+            if (!driverId || !senderId || !message) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await connection.invoke("SendDriverAdminMessage", driverId, senderId, senderRole, message);
+                log(`📤 Sent admin message`, 'chat');
+                document.getElementById('adminMessage').value = '';
+            } catch (error) {
+                log(`❌ Error sending admin message: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function getDriverAdminChatHistory() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            const driverId = document.getElementById('adminDriverId').value;
+            if (!driverId) {
+                alert('Please enter a Driver ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("GetDriverAdminChatHistory", driverId);
+            } catch (error) {
+                log(`❌ Error getting admin chat history: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function getDriverAdminConversationList() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert('Please connect first');
+                return;
+            }
+
+            try {
+                await connection.invoke("GetDriverAdminConversationList");
+            } catch (error) {
+                log(`❌ Error getting conversation list: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Generate sample GUIDs
+        function generateGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Set sample GUIDs on page load
+        window.onload = function() {
+            const sampleGuid = generateGuid();
+            document.getElementById('chatRideId').value = sampleGuid;
+            document.getElementById('locRideId').value = sampleGuid;
+            document.getElementById('groupRideId').value = sampleGuid;
+            document.getElementById('chatSenderId').value = generateGuid();
+            document.getElementById('locDriverId').value = generateGuid();
+            document.getElementById('groupDriverId').value = document.getElementById('locDriverId').value;
+            document.getElementById('adminDriverId').value = document.getElementById('locDriverId').value;
+            document.getElementById('adminSenderId').value = generateGuid();
+        };
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,31 @@
+﻿using PickURide.Application.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PickURide.Application.Interfaces.Repositories
+{
+    public interface IFareSettingRepository
+    {
+        Task<decimal> GetBaseFareAsync();
+        Task<decimal> GetPerKmRateAsync();
+        Task<decimal> GetPerMinuteRateAsync();
+        Task<decimal> GetMinimumFareAsync();
+        Task UpdateBaseFareAsync(decimal baseFare);
+        Task UpdatePerKmRateAsync(decimal perKmRate);
+        Task UpdatePerMinuteRateAsync(decimal perMinuteRate);
+        Task UpdateMinimumFareAsync(decimal minimumFare);
+        Task<decimal> CalculateFareAsync(decimal distance, TimeSpan duration);
+        Task<string> CreateAsync(decimal baseFare, decimal perKmRate, decimal perMinuteRate,decimal AdminCommission, string Area);
+        Task<string> UpdateAsync(int settingId, decimal baseFare, decimal perKmRate, decimal perMinuteRate, decimal AdminCommission, string Area  );
+        Task<decimal> GetFareByIdAsync(int fareSettingId);
+        Task<string> DeleteAsync(int fareSettingId);
+        Task<List<FareSettings>> GetAllFareSettingsAsync();
+
+        Task<List<FareSettings>> GetAllFareSettingsWithSlabsAsync();
+        Task<string> CreateWithSlabsAsync(FareSettingUpsertRequest request);
+        Task<string> UpdateWithSlabsAsync(FareSettingUpsertRequest request);
+    }
+}

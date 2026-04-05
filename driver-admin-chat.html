@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PickURide - Driver & Admin Chat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    input, select {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #chatMessages {
+      list-style: none;
+      padding: 0;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    #chatMessages li {
+      padding: 10px;
+      margin: 8px 0;
+      background-color: white;
+      border-radius: 4px;
+      border-left: 4px solid #007bff;
+    }
+    #chatMessages li.admin {
+      border-left-color: #28a745;
+    }
+    #chatMessages li.driver {
+      border-left-color: #ffc107;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .status.connected {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status.disconnected {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .status.connecting {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .info-box {
+      background-color: #e7f3ff;
+      border: 1px solid #b3d9ff;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .conversation-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      background-color: #f9f9f9;
+    }
+    .conversation-item {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+    }
+    .conversation-item:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Driver ↔ Admin Chat</h2>
+
+  <div id="connectionStatus" class="status disconnected">Disconnected</div>
+
+  <div class="info-box">
+    <strong>Instructions:</strong><br>
+    • Enter Driver ID (GUID format)<br>
+    • Select your role (Driver or Admin)<br>
+    • Click "Connect" to join the chat<br>
+    • Admins can see all conversations in the list below
+  </div>
+
+  <label>Driver ID (GUID):</label><br>
+  <input type="text" id="driverId" value="A91E9F28-1234-4B5A-AE35-B12AB0B4678D" placeholder="Enter Driver GUID"><br><br>
+
+  <label>Sender ID (GUID or Name):</label><br>
+  <input type="text" id="senderId" value="ADMIN-123456" placeholder="Enter your ID or name"><br><br>
+
+  <label>Sender Role:</label><br>
+  <select id="senderRole">
+    <option value="Driver">Driver</option>
+    <option value="Admin" selected>Admin</option>
+  </select><br><br>
+
+  <button onclick="connectToChat()" id="connectBtn">Connect</button>
+  <button onclick="disconnectFromChat()" id="disconnectBtn" disabled>Disconnect</button>
+  <button onclick="refreshMembership()" id="refreshBtn" disabled>Refresh Membership</button>
+
+  <hr>
+
+  <div id="adminSection" style="display: none;">
+    <h4>All Conversations (Admin Only):</h4>
+    <div id="conversationList" class="conversation-list">
+      <p style="text-align: center; color: #666;">No conversations yet. Start chatting to see conversations here.</p>
+    </div>
+    <button onclick="loadConversationList()" id="conversationListBtn" disabled>Refresh Conversation List</button>
+    <hr>
+  </div>
+
+  <h4>Chat Messages:</h4>
+  <button onclick="loadChatHistory()" id="historyBtn" disabled>Load Chat History</button>
+  <ul id="chatMessages"></ul>
+
+  <hr>
+
+  <label>Message:</label><br>
+  <input type="text" id="messageText" placeholder="Type your message here..." onkeypress="handleKeyPress(event)"><br><br>
+
+  <button onclick="sendMessage()" id="sendBtn" disabled>Send Message</button>
+
+  <script>
+    const hubUrl = "https://localhost:7008/ridechathub";
+    let connection = null;
+    let currentDriverId = null;
+    let currentRole = null;
+
+    const sendBtn = document.getElementById("sendBtn");
+    const connectBtn = document.getElementById("connectBtn");
+    const disconnectBtn = document.getElementById("disconnectBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const historyBtn = document.getElementById("historyBtn");
+    const conversationListBtn = document.getElementById("conversationListBtn");
+    const driverIdInput = document.getElementById("driverId");
+    const senderRoleSelect = document.getElementById("senderRole");
+    const statusDiv = document.getElementById("connectionStatus");
+    const adminSection = document.getElementById("adminSection");
+
+    // ✅ Helper function to validate GUID
+    function isValidGuid(guid) {
+      const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      return guidRegex.test(guid);
+    }
+
+    // ✅ Helper to update connection status
+    function updateStatus(status, message) {
+      statusDiv.className = `status ${status}`;
+      statusDiv.textContent = message;
+    }
+
+    // ✅ Helper to append messages to UI
+    function appendMessage(chat) {
+      const list = document.getElementById("chatMessages");
+      const item = document.createElement("li");
+      
+      const role = chat.senderRole || "Unknown";
+      const senderId = chat.senderId || "Unknown";
+      const message = chat.message || "";
+      const driverName = chat.driverName || "Unknown Driver";
+      const date = chat.dateTime ? new Date(chat.dateTime).toLocaleString() : new Date().toLocaleString();
+      
+      // Add role-based styling
+      item.className = role.toLowerCase();
+      
+      // Format message display
+      const senderDisplay = role === "Admin" ? `👤 Admin (${senderId.substring(0, 8)}...)` : `🚗 Driver (${senderId.substring(0, 8)}...)`;
+      
+      item.innerHTML = `
+        <strong>${senderDisplay}</strong><br>
+        <span>${message}</span><br>
+        <small style="color: #666;">${date}</small>
+        ${chat.driverName ? `<br><small style="color: #666;">Driver: ${driverName}</small>` : ''}
+      `;
+      
+      list.appendChild(item);
+      list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
+    }
+
+    // ✅ Render chat history
+    function renderHistory(history) {
+      const list = document.getElementById("chatMessages");
+      list.innerHTML = "";
+
+      if (!history || history.length === 0) {
+        const empty = document.createElement("li");
+        empty.textContent = "No messages yet.";
+        empty.style.fontStyle = "italic";
+        empty.style.color = "#666";
+        list.appendChild(empty);
+        return;
+      }
+
+      history.forEach(appendMessage);
+    }
+
+    // ✅ Render conversation list (Admin only)
+    function renderConversationList(conversations) {
+      const listDiv = document.getElementById("conversationList");
+      
+      if (!conversations || conversations.length === 0) {
+        listDiv.innerHTML = '<p style="text-align: center; color: #666;">No conversations yet.</p>';
+        return;
+      }
+
+      listDiv.innerHTML = "";
+      conversations.forEach(conv => {
+        const item = document.createElement("div");
+        item.className = "conversation-item";
+        item.onclick = () => {
+          if (conv.driverId) {
+            driverIdInput.value = conv.driverId;
+            currentDriverId = conv.driverId;
+            ensureGroupMembership().then(() => {
+              loadChatHistory();
+            });
+          }
+        };
+        
+        const lastMsg = conv.lastMessage || "No messages";
+        const lastMsgDate = conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleString() : "";
+        
+        item.innerHTML = `
+          <strong>${conv.driverName || 'Unknown Driver'}</strong><br>
+          <small>${lastMsg.substring(0, 50)}${lastMsg.length > 50 ? '...' : ''}</small><br>
+          <small style="color: #666;">${lastMsgDate}</small>
+        `;
+        
+        listDiv.appendChild(item);
+      });
+    }
+
+    // ✅ Initialize SignalR connection
+    function initializeConnection() {
+      if (connection) {
+        connection.stop();
+      }
+
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl)
+        .configureLogging(signalR.LogLevel.Information)
+        .withAutomaticReconnect({
+          nextRetryDelayInMilliseconds: retryContext => {
+            if (retryContext.elapsedMilliseconds < 60000) {
+              return 2000;
+            }
+            return 10000;
+          }
+        })
+        .build();
+
+      // ✅ Connection event handlers
+      connection.onclose(() => {
+        console.log("❌ Connection closed");
+        updateStatus("disconnected", "Disconnected from chat hub");
+        sendBtn.disabled = true;
+        historyBtn.disabled = true;
+        refreshBtn.disabled = true;
+        conversationListBtn.disabled = true;
+        disconnectBtn.disabled = true;
+        connectBtn.disabled = false;
+      });
+
+      connection.onreconnecting(() => {
+        console.log("🔄 Reconnecting...");
+        updateStatus("connecting", "Reconnecting to chat hub...");
+      });
+
+      connection.onreconnected(() => {
+        console.log("✅ Reconnected");
+        updateStatus("connected", "Connected to chat hub");
+        // Rejoin groups on reconnection
+        ensureGroupMembership().then(() => {
+          if (currentDriverId) {
+            loadChatHistory();
+          }
+          if (currentRole === "Admin") {
+            loadConversationList();
+          }
+        });
+      });
+
+      // ✅ Receive real-time chat messages
+      connection.on("ReceiveDriverAdminMessage", (chat) => {
+        console.log("📨 Received message:", chat);
+        appendMessage(chat);
+      });
+
+      // ✅ Receive chat history
+      connection.on("ReceiveDriverAdminChatHistory", (history) => {
+        console.log("📜 Chat History received:", history);
+        renderHistory(history);
+      });
+
+      // ✅ Receive conversation list (Admin only)
+      connection.on("ReceiveDriverAdminConversationList", (conversations) => {
+        console.log("📋 Conversation list received:", conversations);
+        renderConversationList(conversations);
+      });
+
+      // ✅ Receive conversation summary updates
+      connection.on("ReceiveDriverAdminConversationSummary", (summary) => {
+        console.log("📊 Conversation summary received:", summary);
+        // Refresh conversation list if admin
+        if (currentRole === "Admin") {
+          loadConversationList();
+        }
+      });
+
+      // ✅ Receive message summary (Admin dashboard)
+      connection.on("DriverAdminMessageSummary", (summary) => {
+        console.log("📨 Message summary received:", summary);
+        // Refresh conversation list if admin
+        if (currentRole === "Admin") {
+          loadConversationList();
+        }
+      });
+    }
+
+    // ✅ Ensure proper group membership
+    async function ensureGroupMembership() {
+      if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+        console.warn("Connection not ready for group membership");
+        return;
+      }
+
+      const driverId = driverIdInput.value.trim();
+      const role = senderRoleSelect.value;
+
+      const operations = [];
+
+      // Leave previous driver support group if switching
+      if (currentDriverId && currentDriverId !== driverId && currentDriverId) {
+        try {
+          await connection.invoke("LeaveDriverSupport", currentDriverId);
+          console.log(`📤 Left previous driver support: ${currentDriverId}`);
+        } catch (err) {
+          console.warn("Error leaving previous driver support:", err);
+        }
+      }
+
+      // Join driver support group for the current driver
+      if (driverId && isValidGuid(driverId)) {
+        operations.push(
+          connection.invoke("JoinDriverSupport", driverId)
+            .then(() => {
+              console.log(`📌 Joined driver support group: ${driverId}`);
+              currentDriverId = driverId;
+            })
+            .catch(err => {
+              console.error("Failed to join driver support:", err);
+              throw err;
+            })
+        );
+      }
+
+      // Admins should join admin dashboard
+      if (role === "Admin") {
+        operations.push(
+          connection.invoke("JoinAdminDashboard")
+            .then(() => {
+              console.log("📌 Joined admin dashboard");
+              currentRole = "Admin";
+              adminSection.style.display = "block";
+              conversationListBtn.disabled = false;
+            })
+            .catch(err => {
+              console.error("Failed to join admin dashboard:", err);
+              throw err;
+            })
+        );
+      } else {
+        currentRole = "Driver";
+        adminSection.style.display = "none";
+        conversationListBtn.disabled = true;
+      }
+
+      try {
+        await Promise.all(operations);
+        console.log("🔁 Group membership updated successfully");
+      } catch (err) {
+        console.error("Group membership update failed:", err);
+        throw err;
+      }
+    }
+
+    // ✅ Connect to chat
+    async function connectToChat() {
+      const driverId = driverIdInput.value.trim();
+
+      if (!driverId) {
+        alert("Please enter a Driver ID.");
+        return;
+      }
+
+      if (!isValidGuid(driverId)) {
+        alert("Please enter a valid GUID format for Driver ID.");
+        return;
+      }
+
+      try {
+        updateStatus("connecting", "Connecting to chat hub...");
+        connectBtn.disabled = true;
+
+        // Initialize connection if not already done
+        if (!connection) {
+          initializeConnection();
+        }
+
+        // Start connection
+        await connection.start();
+        console.log("✅ Connected to chat hub.");
+
+        // Ensure group membership
+        await ensureGroupMembership();
+
+        updateStatus("connected", `Connected - Role: ${senderRoleSelect.value}, Driver: ${driverId.substring(0, 8)}...`);
+        
+        // Enable buttons
+        sendBtn.disabled = false;
+        historyBtn.disabled = false;
+        refreshBtn.disabled = false;
+        disconnectBtn.disabled = false;
+
+        // Load chat history
+        await loadChatHistory();
+
+        // Load conversation list if admin
+        if (senderRoleSelect.value === "Admin") {
+          await loadConversationList();
+        }
+
+      } catch (err) {
+        console.error("❌ Failed to connect:", err.toString());
+        updateStatus("disconnected", `Connection failed: ${err.message}`);
+        alert(`Failed to connect: ${err.message}`);
+        connectBtn.disabled = false;
+      }
+    }
+
+    // ✅ Disconnect from chat
+    async function disconnectFromChat() {
+      if (connection && currentDriverId) {
+        try {
+          await connection.invoke("LeaveDriverSupport", currentDriverId);
+          console.log(`📤 Left driver support: ${currentDriverId}`);
+          currentDriverId = null;
+        } catch (err) {
+          console.error("Error leaving driver support:", err);
+        }
+      }
+
+      if (connection) {
+        await connection.stop();
+        connection = null;
+      }
+
+      updateStatus("disconnected", "Disconnected from chat hub");
+      sendBtn.disabled = true;
+      historyBtn.disabled = true;
+      refreshBtn.disabled = true;
+      conversationListBtn.disabled = true;
+      disconnectBtn.disabled = true;
+      connectBtn.disabled = false;
+      adminSection.style.display = "none";
+      currentRole = null;
+    }
+
+    // ✅ Refresh group membership
+    async function refreshMembership() {
+      if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+        alert("Please connect first.");
+        return;
+      }
+
+      try {
+        refreshBtn.disabled = true;
+        await ensureGroupMembership();
+        if (currentDriverId) {
+          await loadChatHistory();
+        }
+        if (currentRole === "Admin") {
+          await loadConversationList();
+        }
+        alert("Membership refreshed successfully!");
+      } catch (err) {
+        console.error("Failed to refresh membership:", err);
+        alert(`Failed to refresh membership: ${err.message}`);
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    // ✅ Load chat history
+    async function loadChatHistory() {
+      if (!connection || !currentDriverId) {
+        alert("Please connect to a driver chat first.");
+        return;
+      }
+
+      try {
+        historyBtn.disabled = true;
+        await connection.invoke("GetDriverAdminChatHistory", currentDriverId);
+        console.log("📜 Requested chat history");
+      } catch (err) {
+        console.error("Failed to load chat history:", err.toString());
+        alert(`Failed to load chat history: ${err.message}`);
+      } finally {
+        historyBtn.disabled = false;
+      }
+    }
+
+    // ✅ Load conversation list (Admin only)
+    async function loadConversationList() {
+      if (!connection || currentRole !== "Admin") {
+        return;
+      }
+
+      try {
+        conversationListBtn.disabled = true;
+        await connection.invoke("GetDriverAdminConversationList");
+        console.log("📋 Requested conversation list");
+      } catch (err) {
+        console.error("Failed to load conversation list:", err.toString());
+        alert(`Failed to load conversation list: ${err.message}`);
+      } finally {
+        conversationListBtn.disabled = false;
+      }
+    }
+
+    // ✅ Send message
+    async function sendMessage() {
+      if (!connection || !currentDriverId) {
+        alert("Please connect to a driver chat first.");
+        return;
+      }
+
+      const senderId = document.getElementById("senderId").value.trim();
+      const senderRole = senderRoleSelect.value;
+      const message = document.getElementById("messageText").value.trim();
+
+      if (!senderId) {
+        alert("Please enter a Sender ID.");
+        return;
+      }
+
+      if (!message) {
+        alert("Please enter a message.");
+        return;
+      }
+
+      try {
+        sendBtn.disabled = true;
+        await connection.invoke("SendDriverAdminMessage", currentDriverId, senderId, senderRole, message);
+        console.log(`📨 Sent: "${message}"`);
+        document.getElementById("messageText").value = "";
+        
+        // Refresh history after sending
+        setTimeout(() => {
+          loadChatHistory();
+        }, 500);
+      } catch (err) {
+        console.error("Send failed:", err.toString());
+        alert(`Failed to send message: ${err.message}`);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    // ✅ Handle Enter key press in message input
+    function handleKeyPress(event) {
+      if (event.key === "Enter" && !sendBtn.disabled) {
+        sendMessage();
+      }
+    }
+
+    // ✅ Event listeners for role and driver ID changes
+    senderRoleSelect.addEventListener("change", () => {
+      if (connection && connection.state === signalR.HubConnectionState.Connected) {
+        ensureGroupMembership().then(() => {
+          if (senderRoleSelect.value === "Admin") {
+            loadConversationList();
+          }
+        });
+      }
+    });
+
+    driverIdInput.addEventListener("change", () => {
+      if (connection && connection.state === signalR.HubConnectionState.Connected) {
+        ensureGroupMembership().then(() => {
+          loadChatHistory();
+        });
+      }
+    });
+
+    // ✅ Initialize on page load
+    window.addEventListener("load", () => {
+      initializeConnection();
+    });
+  </script>
+</body>
+</html>
+

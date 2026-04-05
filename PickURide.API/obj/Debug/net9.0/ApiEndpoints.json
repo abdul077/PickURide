@@ -1,0 +1,2096 @@
+[
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "DashboardCounts",
+    "RelativePath": "api/Admin/dashboard-counts",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "GetDashboardTrends",
+    "RelativePath": "api/Admin/dashboard-trends",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.TrendRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "GetAdminByEmail",
+    "RelativePath": "api/Admin/get-admin-by-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "GetAdminById",
+    "RelativePath": "api/Admin/get-admin-by-id/{adminId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "adminId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "GetAllAdmins",
+    "RelativePath": "api/Admin/get-all-admins",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "LoginAdmin",
+    "RelativePath": "api/Admin/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "RegisterAdmin",
+    "RelativePath": "api/Admin/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.AdminRegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AdminController",
+    "Method": "GetSupportChatHistory",
+    "RelativePath": "api/Admin/support-chat/history/{driverId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "before",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AuditLogController",
+    "Method": "GetAllAuditLogs",
+    "RelativePath": "api/AuditLog/get-all-audit-logs",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.AuditLogFilterRequest",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AuditLogController",
+    "Method": "GetAuditLogById",
+    "RelativePath": "api/AuditLog/get-audit-log/{auditLogId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "auditLogId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.AuditLogController",
+    "Method": "GetMyAuditLogs",
+    "RelativePath": "api/AuditLog/get-my-audit-logs",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.AuditLogFilterRequest",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.DriverAttendance",
+    "Method": "EndDuty",
+    "RelativePath": "api/DriverAttendance/end",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.EndDutyRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.DriverAttendance",
+    "Method": "IsEligibleForShift",
+    "RelativePath": "api/DriverAttendance/is-eligible-for-shift",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "shiftDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.DriverAttendance",
+    "Method": "StartDuty",
+    "RelativePath": "api/DriverAttendance/start",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.StartDutyRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverById",
+    "RelativePath": "api/Drivers/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverAttendances",
+    "RelativePath": "api/Drivers/{driverId}/attendances-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverLocationHistories",
+    "RelativePath": "api/Drivers/{driverId}/locations-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverOvertimeDuties",
+    "RelativePath": "api/Drivers/{driverId}/overtimeduties-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverRides",
+    "RelativePath": "api/Drivers/{driverId}/rides-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverShiftApplications",
+    "RelativePath": "api/Drivers/{driverId}/shiftapplications-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetDriverShifts",
+    "RelativePath": "api/Drivers/{driverId}/shifts-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetInsuranceImage",
+    "RelativePath": "api/Drivers/{email}/insurance-image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetLicenseImage",
+    "RelativePath": "api/Drivers/{email}/license-image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetRegistrationImage",
+    "RelativePath": "api/Drivers/{email}/registration-image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetSelfieImage",
+    "RelativePath": "api/Drivers/{email}/selfie-image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "AcceptDriver",
+    "RelativePath": "api/Drivers/accept-driver-admin/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "DeleteDriver",
+    "RelativePath": "api/Drivers/delete-driver-admin/{driverId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/Drivers/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.ForgetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetAllDrivers",
+    "RelativePath": "api/Drivers/get-all-drivers-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetApprovedDrivers",
+    "RelativePath": "api/Drivers/get-approved-drivers-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "GetLiveLocations",
+    "RelativePath": "api/Drivers/get-driver-locations-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "Login",
+    "RelativePath": "api/Drivers/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "Logout",
+    "RelativePath": "api/Drivers/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "SendOtp",
+    "RelativePath": "api/Drivers/re-send-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "Register",
+    "RelativePath": "api/Drivers/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "RejectDriver",
+    "RelativePath": "api/Drivers/reject-driver-admin/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "rejectionReason",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "RemoveDriverLiveLocation",
+    "RelativePath": "api/Drivers/remove-driver-live-locations",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "ResetPassword",
+    "RelativePath": "api/Drivers/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.ResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "SetDriverAvailableAnonymous",
+    "RelativePath": "api/Drivers/set-available-anonymous",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.SetDriverAvailableRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "SetDriverAvailable",
+    "RelativePath": "api/Drivers/set-available/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "SetDriverOffline",
+    "RelativePath": "api/Drivers/set-offline/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "Update",
+    "RelativePath": "api/Drivers/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "lat",
+        "Type": "System.Double",
+        "IsRequired": false
+      },
+      {
+        "Name": "lng",
+        "Type": "System.Double",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "UpdateDriverDetails",
+    "RelativePath": "api/Drivers/update-details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "DriverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "FullName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LicenseNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CarLicensePlate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CarVin",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CarRegistration",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CarInsurance",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Sin",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "VehicleName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "VehicleColor",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StripeAccountId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LicenseImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegistrationImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "InsuranceImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "SelfieImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "UpdateDriverProfile",
+    "RelativePath": "api/Drivers/update-profile",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.UpdateDriverProfileRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "UpdateStripeAccountId",
+    "RelativePath": "api/Drivers/update-stripe-account-id",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.UpdateStripeAccountIdRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "UploadDriverImages",
+    "RelativePath": "api/Drivers/upload-images",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "DriverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "LicenseImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegistrationImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "InsuranceImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "SelfieImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "VerifyOtp",
+    "RelativePath": "api/Drivers/verify",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.OtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.FareSettings",
+    "Method": "DeleteFare",
+    "RelativePath": "api/FareSettings/delete-fare/{fareSettingId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fareSettingId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.FareSettings",
+    "Method": "GetFare",
+    "RelativePath": "api/FareSettings/get-fare",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.FareSettings",
+    "Method": "SetFare",
+    "RelativePath": "api/FareSettings/set-fare",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.FareSettingUpsertRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.FareSettings",
+    "Method": "UpdateFare",
+    "RelativePath": "api/FareSettings/update-fare",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.FareSettingUpsertRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "SubmitFeedback",
+    "RelativePath": "api/Feedback",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "PickURide.Application.Models.FeedbackDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "GetAllFeedback",
+    "RelativePath": "api/Feedback/all",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "GetFeedbackByDriver",
+    "RelativePath": "api/Feedback/driver/{driverId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "GetDriverAverageRating",
+    "RelativePath": "api/Feedback/driver/{driverId}/average-rating",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "GetFeedbackByRide",
+    "RelativePath": "api/Feedback/ride/{rideId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Feedback",
+    "Method": "GetFeedbackByUser",
+    "RelativePath": "api/Feedback/user/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "MakePayment",
+    "RelativePath": "api/Payment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "PickURide.Application.Models.PaymentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "CompleteTransaction",
+    "RelativePath": "api/Payment/complete-transaction",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.CompleteTransactionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "UpdateCustomerPayments",
+    "RelativePath": "api/Payment/customer-payments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "PickURide.Application.Models.CustomerPaymentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetDriverPaidTransactionDetails",
+    "RelativePath": "api/Payment/driver-paid-transaction-details/{driverId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetDriverTransaction",
+    "RelativePath": "api/Payment/driver-transaction/{driverId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetAllPayments",
+    "RelativePath": "api/Payment/get-all-payments-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetAllPaymentsWithDetails",
+    "RelativePath": "api/Payment/get-all-payments-details-admin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetEarningsSummary",
+    "RelativePath": "api/Payment/get-earnings-summary-admin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetPagedPayments",
+    "RelativePath": "api/Payment/get-paged-payments-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "filter",
+        "Type": "PickURide.Application.Models.PaymentFilterDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetPaymentByRideId",
+    "RelativePath": "api/Payment/get-payments-by-ride-admin/{rideId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "GetHeldPayments",
+    "RelativePath": "api/Payment/held-payments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "CreateHeldPayment",
+    "RelativePath": "api/Payment/held-payments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.CreateHeldPaymentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Payment",
+    "Method": "UpdatePayment",
+    "RelativePath": "api/Payment/update-payment-paid-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "PickURide.Application.Models.PaymentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "CreatePrivacyPolicy",
+    "RelativePath": "api/Policy/create-privacy-policy",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.CreatePolicyRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "CreateTermsAndConditions",
+    "RelativePath": "api/Policy/create-terms-and-conditions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.CreatePolicyRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "GetPolicyById",
+    "RelativePath": "api/Policy/get-policy/{policyId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "policyId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "GetPrivacyPolicy",
+    "RelativePath": "api/Policy/get-privacy-policy",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "GetPrivacyPolicyHistory",
+    "RelativePath": "api/Policy/get-privacy-policy-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "GetTermsAndConditions",
+    "RelativePath": "api/Policy/get-terms-and-conditions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PolicyController",
+    "Method": "GetTermsAndConditionsHistory",
+    "RelativePath": "api/Policy/get-terms-and-conditions-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PromoCodes",
+    "Method": "List",
+    "RelativePath": "api/PromoCodes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PromoCodes",
+    "Method": "Create",
+    "RelativePath": "api/PromoCodes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.PromoCodes\u002BPromoUpsertRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PromoCodes",
+    "Method": "Update",
+    "RelativePath": "api/PromoCodes/{promoCodeId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "promoCodeId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.PromoCodes\u002BPromoUpsertRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PromoCodes",
+    "Method": "Usage",
+    "RelativePath": "api/PromoCodes/{promoCodeId}/usage",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "promoCodeId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.PromoCodes",
+    "Method": "AllUsage",
+    "RelativePath": "api/PromoCodes/usage",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetRide",
+    "RelativePath": "api/Ride/{rideId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "SetRideArrivedStatus",
+    "RelativePath": "api/Ride/{rideId}/arrived",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "EndRide",
+    "RelativePath": "api/Ride/{rideId}/end",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "StartRide",
+    "RelativePath": "api/Ride/{rideId}/start",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "SetRideWaitingStatus",
+    "RelativePath": "api/Ride/add-ride-waiting-status",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "SetRideWaitingTime",
+    "RelativePath": "api/Ride/add-ride-waiting-time",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "waitingTime",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "AssignDriverToRide",
+    "RelativePath": "api/Ride/assign-driver-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.AssignDriverRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "BookRide",
+    "RelativePath": "api/Ride/book",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.BookRideRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "CancelRide",
+    "RelativePath": "api/Ride/cancel-ride",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rideId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "FareEstimate",
+    "RelativePath": "api/Ride/fare-estimate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "distance",
+        "Type": "System.Decimal",
+        "IsRequired": false
+      },
+      {
+        "Name": "duration",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "promoCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetAllRides",
+    "RelativePath": "api/Ride/get-all-rides-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.RidePaginationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetDriverLastRide",
+    "RelativePath": "api/Ride/get-driver-last-ride",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetRidesHistory",
+    "RelativePath": "api/Ride/get-driver-rides-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetScheduledRidesHistory",
+    "RelativePath": "api/Ride/get-driver-scheduled-rides-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetRideStatusCounts",
+    "RelativePath": "api/Ride/get-ride-status-counts-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.RidePaginationRequest",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetUserCompletedRidesHistory",
+    "RelativePath": "api/Ride/get-user-completed-rides-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetUserLastRide",
+    "RelativePath": "api/Ride/get-user-last-ride",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetUserRidesHistory",
+    "RelativePath": "api/Ride/get-user-rides-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Ride",
+    "Method": "GetUserScheduledRidesHistory",
+    "RelativePath": "api/Ride/get-user-scheduled-rides-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "ApplyForShift",
+    "RelativePath": "api/Shift/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.ApplyShiftRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "ApproveApplication",
+    "RelativePath": "api/Shift/approve-admin/{applicationId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "CreateShift",
+    "RelativePath": "api/Shift/create-shift-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.CreateShiftRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetActiveShifts",
+    "RelativePath": "api/Shift/get-active-shifts",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetAllShifts",
+    "RelativePath": "api/Shift/get-all-shifts-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetApprovedShiftsApplications",
+    "RelativePath": "api/Shift/get-approved-shifts-applications-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetDriverAppliedShifts",
+    "RelativePath": "api/Shift/get-driver-applied-shifts",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetPendingShiftsApplications",
+    "RelativePath": "api/Shift/get-pending-shifts-applications-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "GetRejectedShiftsApplications",
+    "RelativePath": "api/Shift/get-rejected-shifts-applications-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "RejectApplication",
+    "RelativePath": "api/Shift/reject-admin/{applicationId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Shift",
+    "Method": "UpdateShift",
+    "RelativePath": "api/Shift/update-shift-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.UpdateShiftRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Tip",
+    "Method": "GiveTip",
+    "RelativePath": "api/Tip",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "PickURide.Application.Models.TipDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "DeleteUser",
+    "RelativePath": "api/User/delete-user-admin/{userId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/User/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.ForgetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/User/get-all-users-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "GetLatestRide",
+    "RelativePath": "api/User/get-latest-ride/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "GetUserById",
+    "RelativePath": "api/User/get-user-by-id-admin/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "Login",
+    "RelativePath": "api/User/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "Logout",
+    "RelativePath": "api/User/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "SendOtp",
+    "RelativePath": "api/User/re-send-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "Register",
+    "RelativePath": "api/User/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "ResetPassword",
+    "RelativePath": "api/User/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.ResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "GetUser",
+    "RelativePath": "api/User/single-users/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "GetUserImage",
+    "RelativePath": "api/User/single-users/{userId}/image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "UpdateUser",
+    "RelativePath": "api/User/update-user",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "FullName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProfileImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "UpdateUserAdmin",
+    "RelativePath": "api/User/update-user-admin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.UpdateUserAdminRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "VerifyOtp",
+    "RelativePath": "api/User/verify",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.OtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "VerifyPromo",
+    "RelativePath": "api/User/verify-promo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.API.Controllers.VerifyPromoRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

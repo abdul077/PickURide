@@ -1,0 +1,11 @@
+D:\CodyTech Projects\PickURide\PickURide.Domain\bin\Release\net9.0\PickURide.Domain.deps.json
+D:\CodyTech Projects\PickURide\PickURide.Domain\bin\Release\net9.0\PickURide.Domain.dll
+D:\CodyTech Projects\PickURide\PickURide.Domain\bin\Release\net9.0\PickURide.Domain.pdb
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.AssemblyInfoInputs.cache
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.AssemblyInfo.cs
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.csproj.CoreCompileInputs.cache
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.dll
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\refint\PickURide.Domain.dll
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\PickURide.Domain.pdb
+D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Release\net9.0\ref\PickURide.Domain.dll
