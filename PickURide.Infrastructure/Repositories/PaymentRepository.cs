@@ -1016,6 +1016,28 @@ namespace PickURide.Infrastructure.Repositories
             }
 
             // Create new payment entity
+            // Tip can be supplied either directly in this request OR via the /api/tip endpoint.
+            // If the capture request doesn't include TipAmount, fall back to the stored Tip record.
+            decimal tipAmount = request.TipAmount ?? 0m;
+            if (tipAmount <= 0m && request.RideId != Guid.Empty)
+            {
+                try
+                {
+                    var tipString = await _unitOfWork.TipRepository.GetTipbyRideId(request.RideId);
+                    if (!string.IsNullOrWhiteSpace(tipString) &&
+                        !string.Equals(tipString, "No Tip", StringComparison.OrdinalIgnoreCase) &&
+                        decimal.TryParse(tipString, out var parsedTip) &&
+                        parsedTip > 0m)
+                    {
+                        tipAmount = parsedTip;
+                    }
+                }
+                catch
+                {
+                    // If tip lookup fails, proceed with 0 tip (payment still completes).
+                }
+            }
+
             Payment paymentEntity = new Payment
             {
                 PaymentId = Guid.NewGuid(),
@@ -1029,7 +1051,7 @@ namespace PickURide.Infrastructure.Repositories
                 TransferStatus = request.Status == "completed_balance_paid" ? "completed" : "pending",
                 AdminShare = adminShare,
                 DriverShare = driverShare,
-                TipAmount = request.TipAmount,
+                TipAmount = tipAmount,
                 PromoCode = request.PromoCode,
                 PaymentMethod = request.PaymentMethod,
                 PaymentToken = request.PaymentToken,
@@ -1053,7 +1075,17 @@ namespace PickURide.Infrastructure.Repositories
             await _hubContext.Clients.Group(paymentEntity.DriverId.ToString())
              .SendAsync("NewRideAssigned", new
              {
-                 Status="Payment Received"
+                 // Keep compatibility with driver app which listens on NewRideAssigned
+                 // for end-of-ride payment completion updates.
+                 RideId = paymentEntity.RideId,
+                 Status = "Payment Received",
+                 Payment = "Successful",
+                 // Driver's earning for the ride (excluding tip)
+                 FareFinal = paymentEntity.DriverShare ?? 0m,
+                 // Tip (if any)
+                 Tip = paymentEntity.TipAmount ?? 0m,
+                 // Total earning including tip (optional convenience for clients)
+                 TotalAmount = (paymentEntity.DriverShare ?? 0m) + (paymentEntity.TipAmount ?? 0m)
              });
             return new PaymentDto
             {

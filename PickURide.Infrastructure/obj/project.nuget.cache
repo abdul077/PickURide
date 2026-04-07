@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FOS56Vj0Kl0=",
+  "dgSpecHash": "ZGYVDLhsSMA=",
   "success": true,
-  "projectFilePath": "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
+  "projectFilePath": "E:\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Abdul muiz\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Abdul muiz\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

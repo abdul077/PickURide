@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -339,7 +339,9 @@ namespace PickURide.Infrastructure.Services
                 int totalWaitingMinutes = 0;
                 if (ride.TotalWaitingTime is TimeOnly waitingTime)
                     totalWaitingMinutes = waitingTime.Hour * 60 + waitingTime.Minute;
-                decimal waitingPrice = perMinute * totalWaitingMinutes;
+                const int freeWaitingMinutes = 5;
+                int billableWaitingMinutes = Math.Max(totalWaitingMinutes - freeWaitingMinutes, 0);
+                decimal waitingPrice = perMinute * billableWaitingMinutes;
 
                 // Calculate final fare: BaseFare + DistancePrice + WaitingPrice
                 decimal calculatedFare = baseFare + distancePrice + waitingPrice;
@@ -998,7 +1000,8 @@ namespace PickURide.Infrastructure.Services
                 {
                     RideId = ride.RideId,
                     RideType = ride.RideType,
-                    FareEstimate = ride.FareEstimate,
+                    // Keep driver-facing fare consistent with start-ride flow (driver share).
+                    FareEstimate = ride.DriverPayment,
                     CreatedAt = ride.CreatedAt,
                     Status = status,
                     PassengerId = user.UserId,

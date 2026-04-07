@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,6 +8,7 @@ using PickURide.Application.Models;
 using PickURide.Infrastructure.Data;
 using PickURide.Infrastructure.Data.Entities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,6 +28,9 @@ namespace PickURide.Infrastructure.Hub
         private static Timer _flushTimer;
         private static readonly object _timerLock = new object();
         private static bool _timerInitialized = false;
+
+        /// <summary>Serializes per-ride replay + group add with SendMessage so no live message is lost between replay and joining the group.</summary>
+        private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> RideChatGates = new();
 
         public RideChatHub(
             IRideChatCacheService chatCacheService, 
@@ -76,34 +80,66 @@ namespace PickURide.Infrastructure.Hub
         }
         public async Task SendMessage(Guid rideId, Guid senderId, string message, string senderRole = "Rider")
         {
-            var chatMessage = new ChatMessageDto
+            var gate = RideChatGates.GetOrAdd(rideId, _ => new SemaphoreSlim(1, 1));
+            await gate.WaitAsync();
+            try
             {
-                RideId = rideId,
-                SenderId = senderId,
-                SenderRole = senderRole,
-                Message = message,
-                SentAt = DateTime.UtcNow,
-                ChatType = "Ride"
-            };
+                var chatMessage = new ChatMessageDto
+                {
+                    RideId = rideId,
+                    SenderId = senderId,
+                    SenderRole = senderRole,
+                    Message = message,
+                    SentAt = DateTime.UtcNow,
+                    ChatType = "Ride"
+                };
 
-            // ✅ Save full message in cache
-            _chatCacheService.SaveMessage(chatMessage);
+                _chatCacheService.SaveMessage(chatMessage);
 
-            // ✅ Broadcast only the needed fields
-            var response = new
+                var response = new
+                {
+                    chatMessage.Sequence,
+                    SenderId = chatMessage.SenderId,
+                    SenderRole = chatMessage.SenderRole,
+                    Message = chatMessage.Message,
+                    DateTime = chatMessage.SentAt
+                };
+
+                await Clients.Group(rideId.ToString()).SendAsync("ReceiveMessage", response);
+            }
+            finally
             {
-                SenderId = chatMessage.SenderId,
-                SenderRole = chatMessage.SenderRole,
-                Message = chatMessage.Message,
-                DateTime = chatMessage.SentAt
-            };
-
-            await Clients.Group(rideId.ToString()).SendAsync("ReceiveMessage", response);
+                gate.Release();
+            }
         }
 
-        public async Task JoinRideChat(Guid rideId)
+        /// <param name="lastReceivedSequence">Last <see cref="ChatMessageDto.Sequence"/> the client already applied; 0 = send full history then live.</param>
+        public async Task JoinRideChat(Guid rideId, long lastReceivedSequence = 0)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, rideId.ToString());
+            var gate = RideChatGates.GetOrAdd(rideId, _ => new SemaphoreSlim(1, 1));
+            await gate.WaitAsync();
+            try
+            {
+                var replay = _chatCacheService.GetMessagesAfter(rideId, lastReceivedSequence);
+                if (replay.Count > 0)
+                {
+                    var replayPayload = replay.Select(m => new
+                    {
+                        m.Sequence,
+                        SenderId = m.SenderId,
+                        SenderRole = m.SenderRole,
+                        Message = m.Message,
+                        DateTime = m.SentAt
+                    });
+                    await Clients.Caller.SendAsync("ReceiveMessageReplay", replayPayload);
+                }
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, rideId.ToString());
+            }
+            finally
+            {
+                gate.Release();
+            }
         }
 
         public async Task LeaveRideChat(Guid rideId)
@@ -119,13 +155,13 @@ namespace PickURide.Infrastructure.Hub
             // Return only the fields needed by the client
             var response = messages.Select(m => new
             {
+                m.Sequence,
                 SenderId = m.SenderId,
                 SenderRole = m.SenderRole,
                 Message = m.Message,
                 DateTime = m.SentAt
             });
 
-            // Send back just to the caller
             await Clients.Caller.SendAsync("ReceiveRideChatHistory", response);
         }
 

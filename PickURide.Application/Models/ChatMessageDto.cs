@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +15,9 @@ namespace PickURide.Application.Models
         public string Message { get; set; }
         public DateTime SentAt { get; set; }
         public string? ChatType { get; set; }
+
+        /// <summary>Monotonic per-ride sequence for replay / catch-up after reconnect.</summary>
+        public long Sequence { get; set; }
     }
 
 }

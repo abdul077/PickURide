@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj": {}
+    "E:\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj": {}
   },
   "projects": {
-    "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj": {
+    "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
+        "projectUniqueName": "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
         "projectName": "PickURide.Application",
-        "projectPath": "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
+        "projectPath": "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
         "packagesPath": "C:\\Users\\Abdul muiz\\.nuget\\packages\\",
-        "outputPath": "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\obj\\",
+        "outputPath": "E:\\PickURide\\PickURide.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -80,14 +80,14 @@
         }
       }
     },
-    "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj": {
+    "E:\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
+        "projectUniqueName": "E:\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
         "projectName": "PickURide.Infrastructure",
-        "projectPath": "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
+        "projectPath": "E:\\PickURide\\PickURide.Infrastructure\\PickURide.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\Abdul muiz\\.nuget\\packages\\",
-        "outputPath": "D:\\CodyTech Projects\\PickURide\\PickURide.Infrastructure\\obj\\",
+        "outputPath": "E:\\PickURide\\PickURide.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -109,8 +109,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj": {
-                "projectPath": "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj"
+              "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj": {
+                "projectPath": "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj"
               }
             }
           }

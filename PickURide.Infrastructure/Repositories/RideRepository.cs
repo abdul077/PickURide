@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PickURide.Application.Interfaces.Repositories;
 using PickURide.Application.Models;
 using PickURide.Application.Models.AllRides;

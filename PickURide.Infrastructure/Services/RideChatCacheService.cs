@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using PickURide.Application.Interfaces.Services;
 using PickURide.Application.Models;
 using System;
@@ -14,6 +14,7 @@ namespace PickURide.Infrastructure.Services
         private const string RideChatKeyPrefix = "RideChat_";
         private static readonly ConcurrentDictionary<Guid, List<ChatMessageDto>> DriverChatCache = new();
         private static readonly ConcurrentDictionary<Guid, object> _locks = new();
+        private static readonly ConcurrentDictionary<Guid, long> _rideNextSequence = new();
 
         public RideChatCacheService(IMemoryCache cache)
         {
@@ -48,6 +49,9 @@ namespace PickURide.Infrastructure.Services
 
                 if (messages != null)
                 {
+                    var next = _rideNextSequence.AddOrUpdate(message.RideId, 1L, (_, s) => s + 1);
+                    message.Sequence = next;
+
                     messages.Add(message);
                     // Explicitly set the cache entry to ensure it's updated
                     _cache.Set(key, messages, new MemoryCacheEntryOptions
@@ -61,13 +65,41 @@ namespace PickURide.Infrastructure.Services
         public List<ChatMessageDto> GetMessages(Guid rideId)
         {
             return _cache.TryGetValue(RideChatKeyPrefix + rideId, out List<ChatMessageDto> messages)
-                ? messages.OrderBy(m => m.SentAt).ToList()
+                ? messages.OrderBy(m => m.Sequence).ThenBy(m => m.SentAt).ToList()
                 : new List<ChatMessageDto>();
+        }
+
+        public List<ChatMessageDto> GetMessagesAfter(Guid rideId, long afterSequence)
+        {
+            var lockObject = _locks.GetOrAdd(rideId, _ => new object());
+            lock (lockObject)
+            {
+                if (!_cache.TryGetValue(RideChatKeyPrefix + rideId, out List<ChatMessageDto> messages) || messages == null)
+                    return new List<ChatMessageDto>();
+
+                return messages
+                    .Where(m => m.Sequence > afterSequence)
+                    .OrderBy(m => m.Sequence)
+                    .ThenBy(m => m.SentAt)
+                    .Select(m => new ChatMessageDto
+                    {
+                        RideId = m.RideId,
+                        DriverId = m.DriverId,
+                        SenderId = m.SenderId,
+                        SenderRole = m.SenderRole,
+                        Message = m.Message,
+                        SentAt = m.SentAt,
+                        ChatType = m.ChatType,
+                        Sequence = m.Sequence
+                    })
+                    .ToList();
+            }
         }
 
         public void ClearMessages(Guid rideId)
         {
             _cache.Remove(RideChatKeyPrefix + rideId);
+            _rideNextSequence.TryRemove(rideId, out _);
         }
 
         public void SaveDriverAdminMessage(Guid driverId, ChatMessageDto message)

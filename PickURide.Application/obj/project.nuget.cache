@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NpR3d6loSuU=",
+  "dgSpecHash": "tObuFnM/BtA=",
   "success": true,
-  "projectFilePath": "D:\\CodyTech Projects\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
+  "projectFilePath": "E:\\PickURide\\PickURide.Application\\PickURide.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Abdul muiz\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.3.0\\microsoft.aspnetcore.authentication.abstractions.2.3.0.nupkg.sha512",
     "C:\\Users\\Abdul muiz\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.3.0\\microsoft.aspnetcore.authentication.core.2.3.0.nupkg.sha512",

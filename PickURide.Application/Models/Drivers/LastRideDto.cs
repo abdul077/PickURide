@@ -1,4 +1,4 @@
-﻿using PickURide.Application.Models.AllRides;
+using PickURide.Application.Models.AllRides;
 using System;
 using System.Collections.Generic;
 using System.Linq;
