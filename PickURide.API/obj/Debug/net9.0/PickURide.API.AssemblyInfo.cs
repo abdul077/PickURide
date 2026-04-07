@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PickURide.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+43adf632297c341ea62db3b4f97e8295f67fcbee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c619e4fdadf015e32a908470a4954427c58cb16")]
 [assembly: System.Reflection.AssemblyProductAttribute("PickURide.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PickURide.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

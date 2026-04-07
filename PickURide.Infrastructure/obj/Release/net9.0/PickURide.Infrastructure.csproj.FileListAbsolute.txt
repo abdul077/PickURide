@@ -13,3 +13,19 @@ D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickU
 D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\refint\PickURide.Infrastructure.dll
 D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.pdb
 D:\CodyTech Projects\PickURide\PickURide.Infrastructure\obj\Release\net9.0\ref\PickURide.Infrastructure.dll
+E:\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.deps.json
+E:\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.dll
+E:\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Infrastructure.pdb
+E:\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Application.dll
+E:\PickURide\PickURide.Infrastructure\bin\Release\net9.0\PickURide.Application.pdb
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.csproj.AssemblyReference.cache
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.AssemblyInfoInputs.cache
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.AssemblyInfo.cs
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.csproj.CoreCompileInputs.cache
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.sourcelink.json
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURid.A5F1CA58.Up2Date
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.dll
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\refint\PickURide.Infrastructure.dll
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\PickURide.Infrastructure.pdb
+E:\PickURide\PickURide.Infrastructure\obj\Release\net9.0\ref\PickURide.Infrastructure.dll

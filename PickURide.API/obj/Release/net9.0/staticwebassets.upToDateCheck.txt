@@ -1,6 +1,6 @@
-D:\CodyTech Projects\PickURide\PickURide.API\wwwroot\admin-driver-chat.html
-D:\CodyTech Projects\PickURide\PickURide.API\wwwroot\locationhub-test.html
-D:\CodyTech Projects\PickURide\PickURide.API\wwwroot\ridehub-test.html
+E:\PickURide\PickURide.API\wwwroot\admin-driver-chat.html
+E:\PickURide\PickURide.API\wwwroot\locationhub-test.html
+E:\PickURide\PickURide.API\wwwroot\ridehub-test.html
 wwwroot\admin-driver-chat.html
 wwwroot\locationhub-test.html
 wwwroot\ridehub-test.html

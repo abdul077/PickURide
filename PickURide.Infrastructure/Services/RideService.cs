@@ -95,9 +95,6 @@ namespace PickURide.Infrastructure.Services
             const decimal minimumBaseFare = 5;
             decimal subtotal = calculatedFare < minimumBaseFare ? minimumBaseFare : calculatedFare;
 
-            // Round to whole number
-            subtotal = Math.Round(subtotal, 0, MidpointRounding.AwayFromZero);
-
             // Apply promo (flat discount) on subtotal (server enforced)
             var promoResult = await TryApplyPromoPreviewAsync(request.PromoCode, request.UserId, subtotal);
             var totalAfterDiscount = promoResult.Total;
@@ -106,10 +103,6 @@ namespace PickURide.Infrastructure.Services
             decimal adminCommissionPercent = Convert.ToDecimal(fareSettings.AdminPercentage);
             decimal adminCommission = totalAfterDiscount * adminCommissionPercent / 100m;
             decimal driverPayment = totalAfterDiscount - adminCommission;
-
-            // Round commission and payment to whole numbers
-            adminCommission = Math.Round(adminCommission, 0, MidpointRounding.AwayFromZero);
-            driverPayment = Math.Round(driverPayment, 0, MidpointRounding.AwayFromZero);
 
             // Create ride
             var rideId = Guid.NewGuid();
@@ -350,15 +343,11 @@ namespace PickURide.Infrastructure.Services
                 const decimal minimumBaseFare = 5;
                 decimal subtotalFinal = calculatedFare < minimumBaseFare ? minimumBaseFare : calculatedFare;
 
-                // Round to whole number
-                subtotalFinal = Math.Round(subtotalFinal, 0, MidpointRounding.AwayFromZero);
-
                 // Apply previously-booked promo (do NOT redeem again)
                 decimal promoDiscount = 0m;
                 if (!string.IsNullOrWhiteSpace(ride.PromoCode) && ride.PromoDiscount.HasValue && ride.PromoDiscount.Value > 0)
                 {
                     promoDiscount = Math.Min(ride.PromoDiscount.Value, subtotalFinal);
-                    promoDiscount = Math.Round(promoDiscount, 0, MidpointRounding.AwayFromZero);
                 }
 
                 decimal finalFare = subtotalFinal - promoDiscount;
@@ -367,10 +356,6 @@ namespace PickURide.Infrastructure.Services
                 decimal adminCommissionPercent = Convert.ToDecimal(fareSettings.AdminPercentage);
                 decimal adminCommission = finalFare * adminCommissionPercent / 100m;
                 decimal driverPayment = finalFare - adminCommission;
-
-                // Round commission and payment to whole numbers
-                adminCommission = Math.Round(adminCommission, 0, MidpointRounding.AwayFromZero);
-                driverPayment = Math.Round(driverPayment, 0, MidpointRounding.AwayFromZero);
 
                 ride.Status = "Completed";
                 ride.FareFinal = finalFare;
@@ -572,9 +557,6 @@ namespace PickURide.Infrastructure.Services
             const decimal minimumBaseFare = 5;
             decimal subtotal = calculatedFare < minimumBaseFare ? minimumBaseFare : calculatedFare;
 
-            // Round to whole number
-            subtotal = Math.Round(subtotal, 0, MidpointRounding.AwayFromZero);
-
             var promoResult = await TryApplyPromoPreviewAsync(promoCode, userId, subtotal);
 
             return new
@@ -644,7 +626,6 @@ namespace PickURide.Infrastructure.Services
             }
 
             var discount = Math.Min(promo.FlatAmount, subtotal);
-            discount = Math.Round(discount, 0, MidpointRounding.AwayFromZero);
 
             var total = subtotal - discount;
             if (total < 0) total = 0;
@@ -876,10 +857,6 @@ namespace PickURide.Infrastructure.Services
             decimal adminCommission = currentFare * adminCommissionPercent / 100m;
             decimal driverPayment = currentFare - adminCommission;
 
-            // Round commission and payment to whole numbers
-            adminCommission = Math.Round(adminCommission, 0, MidpointRounding.AwayFromZero);
-            driverPayment = Math.Round(driverPayment, 0, MidpointRounding.AwayFromZero);
-
             await _hubContext.Clients.Group(rideId.ToString())
                .SendAsync("RideStatusChanged", new
                {
@@ -962,7 +939,7 @@ namespace PickURide.Infrastructure.Services
             return await _unitOfWork.RideRepository.SetArrivedStatus(rideId);
         }
 
-        public async Task<string> SetWaitingTimeAsync(Guid rideId, TimeOnly waitingTime, string status)
+        public async Task<object> SetWaitingTimeAsync(Guid rideId, TimeOnly waitingTime, string status)
         {
             var requestRideStops = await _unitOfWork.RideRepository.GetRideStops(rideId);
             var pickupStop = requestRideStops.OrderBy(s => s.StopOrder).FirstOrDefault();
@@ -1024,7 +1001,51 @@ namespace PickURide.Infrastructure.Services
                 });
             }
 
-            return await _unitOfWork.RideRepository.SetWaitingTime(rideId, waitingTime, status);
+            var updateResult = await _unitOfWork.RideRepository.SetWaitingTime(rideId, waitingTime, status);
+
+            var updatedRide = await _unitOfWork.RideRepository.GetEntityByIdAsync(rideId);
+            if (updatedRide == null)
+            {
+                return new
+                {
+                    Message = updateResult,
+                    TotalWaitingTime = "00:00",
+                    TotalWaitingTimeCharges = 0m
+                };
+            }
+
+            int totalWaitingMinutes = 0;
+            if (updatedRide.TotalWaitingTime is TimeOnly totalWaitingTime)
+                totalWaitingMinutes = totalWaitingTime.Hour * 60 + totalWaitingTime.Minute;
+
+            decimal waitingCharges = 0m;
+            const int freeWaitingMinutes = 5;
+            int billableWaitingMinutes = Math.Max(totalWaitingMinutes - freeWaitingMinutes, 0);
+            var updatedPickupStop = updatedRide.RideStops?.OrderBy(s => s.StopOrder).FirstOrDefault();
+            if (updatedPickupStop != null)
+            {
+                string pickupLocation = updatedPickupStop.Location ?? "";
+                var allFareSettings = await _unitOfWork.FareSettingRepository.GetAllFareSettingsWithSlabsAsync();
+                var fareSettings = allFareSettings
+                    .FirstOrDefault(f => !string.IsNullOrEmpty(f.AreaType) &&
+                                         pickupLocation.Contains(f.AreaType, StringComparison.OrdinalIgnoreCase));
+
+                if (fareSettings != null)
+                {
+                    decimal perMinute = fareSettings.PerMinuteRate ?? 0m;
+                    waitingCharges = perMinute * billableWaitingMinutes;
+                }
+            }
+
+            return new
+            {
+                Message = updateResult,
+                TotalWaitingTime = $"{totalWaitingMinutes / 60:D2}:{totalWaitingMinutes % 60:D2}",
+                FreeWaitingMinutes = freeWaitingMinutes,
+                IsFirstFiveMinutesFree = true,
+                BillableWaitingMinutes = billableWaitingMinutes,
+                TotalWaitingTimeCharges = waitingCharges
+            };
         }
 
         public async Task<string> StartRideAsync(Guid rideId)
