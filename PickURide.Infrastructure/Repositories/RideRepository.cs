@@ -591,6 +591,16 @@ namespace PickURide.Infrastructure.Repositories
                 .ToList();
             var rideDtos = rides.Select(ride => new RideDto
             {
+                // Driver history should show driver-side amount (admin share removed).
+                // Fallback to ride fare values if DriverPayment is missing/invalid.
+                FareEstimate = !string.IsNullOrWhiteSpace(ride.DriverPayment) &&
+                               decimal.TryParse(ride.DriverPayment, out var parsedDriverEstimate)
+                    ? parsedDriverEstimate
+                    : (ride.FareEstimate ?? 0),
+                FareFinal = !string.IsNullOrWhiteSpace(ride.DriverPayment) &&
+                            decimal.TryParse(ride.DriverPayment, out var parsedDriverFinal)
+                    ? parsedDriverFinal
+                    : ride.FareFinal,
                 RideId = ride.RideId,
                 UserId = ride.UserId ?? Guid.Empty,
                 DriverId = ride.DriverId ?? Guid.Empty,
@@ -598,8 +608,6 @@ namespace PickURide.Infrastructure.Repositories
                 Status = ride.Status ?? string.Empty,
                 CreatedAt = Convert.ToDateTime(ride.CreatedAt),
                 Distance = Convert.ToDouble(ride.Distance),
-                FareEstimate = ride.FareEstimate ?? 0,
-                FareFinal = ride.FareFinal,
                 TipAmount = (ride.Tips?.Sum(t => t.Amount ?? 0)) ?? 0,
                 IsScheduled = ride.IsScheduled ?? false,
                 ScheduledTime = ride.ScheduledTime,
