@@ -1016,26 +1016,28 @@ namespace PickURide.Infrastructure.Repositories
             }
 
             // Create new payment entity
-            // Tip can be supplied either directly in this request OR via the /api/tip endpoint.
-            // If the capture request doesn't include TipAmount, fall back to the stored Tip record.
-            decimal tipAmount = request.TipAmount ?? 0m;
-            if (tipAmount <= 0m && request.RideId != Guid.Empty)
+            // Prefer tip saved in Tip table for this ride; fallback to request payload if not found.
+            decimal tipAmount = 0m;
+            if (request.RideId != Guid.Empty)
             {
                 try
                 {
                     var tipString = await _unitOfWork.TipRepository.GetTipbyRideId(request.RideId);
                     if (!string.IsNullOrWhiteSpace(tipString) &&
                         !string.Equals(tipString, "No Tip", StringComparison.OrdinalIgnoreCase) &&
-                        decimal.TryParse(tipString, out var parsedTip) &&
-                        parsedTip > 0m)
+                        decimal.TryParse(tipString, out var parsedTip))
                     {
                         tipAmount = parsedTip;
                     }
                 }
                 catch
                 {
-                    // If tip lookup fails, proceed with 0 tip (payment still completes).
+                    // If tip lookup fails, fallback to request tip or 0 (payment still completes).
                 }
+            }
+            if (tipAmount <= 0m)
+            {
+                tipAmount = request.TipAmount ?? 0m;
             }
 
             Payment paymentEntity = new Payment

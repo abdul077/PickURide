@@ -16,7 +16,7 @@ namespace PickURide.Application.Interfaces.Services
         Task<string> StartRideAsync(Guid rideId);
         Task<PaginatedResult<AllRidesDto>> GetAllRidesAsync(RidePaginationRequest request);
         Task<string> AssignDriverAsync(Guid rideId, Guid driverId);
-        Task<string> SetWaitingTimeAsync(Guid rideId, TimeOnly waitingTime,string status);
+        Task<object> SetWaitingTimeAsync(Guid rideId, TimeOnly waitingTime,string status);
         Task<string> SetWaitingStatusAsync(Guid rideId);
         Task<string> SetArrivedStatusAsync(Guid rideId);
         Task<object> FareEstimate(string Address, decimal distance, string duration, Guid? userId = null, string? promoCode = null);

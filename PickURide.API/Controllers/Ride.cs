@@ -109,7 +109,7 @@ namespace PickURide.API.Controllers
                 }
 
                 var ride = await _rideService.SetWaitingTimeAsync(rideId, convertedTime, status);
-                return Ok(new { Message = ride });
+                return Ok(ride);
             }
             catch (Exception ex)
             {
