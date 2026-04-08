@@ -12,6 +12,7 @@ using PickURide.Infrastructure.Hubs;
 using PickURide.Infrastructure.Repositories;
 using PickURide.Infrastructure.Services;
 using PickURide.Infrastructure.Services.Background;
+using PickURide.API.JsonConverters;
 using System.Text;
 
 try
@@ -172,6 +173,10 @@ try
             options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             options.JsonSerializerOptions.WriteIndented = true;
             options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+
+            // Ensure TimeOnly can be read from both 24h ("HH:mm") and 12h ("hh:mm AM/PM") formats.
+            // Also writes as "hh:mm AM/PM" for consistency with the frontend.
+            options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter("hh:mm tt"));
         });
 
     builder.Services.AddEndpointsApiExplorer();
