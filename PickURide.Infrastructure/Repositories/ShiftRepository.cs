@@ -117,6 +117,8 @@ namespace PickURide.Infrastructure.Repositories
                    ShiftDate = DateOnlyToDateTime(s.ShiftDate),
                    ShiftStart = s.ShiftStart,
                    ShiftEnd = s.ShiftEnd,
+                   ShiftStartFormatted = s.ShiftStart.HasValue ? s.ShiftStart.Value.ToString("hh:mm tt") : null,
+                   ShiftEndFormatted = s.ShiftEnd.HasValue ? s.ShiftEnd.Value.ToString("hh:mm tt") : null,
                    MaxDriverCount = s.MaxDriverCount,
                    Description = s.Description,
                    CreatedAt = s.CreatedAt
@@ -138,6 +140,8 @@ namespace PickURide.Infrastructure.Repositories
                     ShiftDate = DateOnlyToDateTime(s.ShiftDate),
                     ShiftStart = s.ShiftStart,
                     ShiftEnd = s.ShiftEnd,
+                    ShiftStartFormatted = s.ShiftStart.HasValue ? s.ShiftStart.Value.ToString("hh:mm tt") : null,
+                    ShiftEndFormatted = s.ShiftEnd.HasValue ? s.ShiftEnd.Value.ToString("hh:mm tt") : null,
                     MaxDriverCount = s.MaxDriverCount,
                     Description = s.Description,
                     CreatedAt = s.CreatedAt

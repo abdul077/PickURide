@@ -10,3 +10,16 @@ D:\CodyTech Projects\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.
 D:\CodyTech Projects\PickURide\PickURide.Application\obj\Debug\net9.0\refint\PickURide.Application.dll
 D:\CodyTech Projects\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.pdb
 D:\CodyTech Projects\PickURide\PickURide.Application\obj\Debug\net9.0\ref\PickURide.Application.dll
+E:\PickURide\PickURide.Application\bin\Debug\net9.0\PickURide.Application.deps.json
+E:\PickURide\PickURide.Application\bin\Debug\net9.0\PickURide.Application.dll
+E:\PickURide\PickURide.Application\bin\Debug\net9.0\PickURide.Application.pdb
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.csproj.AssemblyReference.cache
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.GeneratedMSBuildEditorConfig.editorconfig
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.AssemblyInfoInputs.cache
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.AssemblyInfo.cs
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.csproj.CoreCompileInputs.cache
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.sourcelink.json
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.dll
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\refint\PickURide.Application.dll
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.pdb
+E:\PickURide\PickURide.Application\obj\Debug\net9.0\ref\PickURide.Application.dll

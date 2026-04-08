@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PickURide.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c619e4fdadf015e32a908470a4954427c58cb16")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b5af10d7f25fa7b8d9b3410baa76481c0ce3b26")]
 [assembly: System.Reflection.AssemblyProductAttribute("PickURide.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PickURide.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

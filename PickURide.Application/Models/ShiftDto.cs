@@ -12,6 +12,8 @@ namespace PickURide.Application.Models
         public DateTime ShiftDate { get; set; }
         public TimeOnly? ShiftStart { get; set; }
         public TimeOnly? ShiftEnd { get; set; }
+        public string? ShiftStartFormatted { get; set; }
+        public string? ShiftEndFormatted { get; set; }
         public int MaxDriverCount { get; set; }
         public string? Description { get; set; }
         public string? Status { get; set; }
