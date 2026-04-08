@@ -11,9 +11,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
- 
+
 namespace PickURide.Infrastructure.Hub
 {
     public class RideChatHub : Microsoft.AspNetCore.SignalR.Hub
@@ -33,7 +34,7 @@ namespace PickURide.Infrastructure.Hub
         private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> RideChatGates = new();
 
         public RideChatHub(
-            IRideChatCacheService chatCacheService, 
+            IRideChatCacheService chatCacheService,
             IDriverRepository driverRepository,
             IDriverLocationService locationService,
             ILogger<RideChatHub> logger,
@@ -46,7 +47,7 @@ namespace PickURide.Infrastructure.Hub
             _logger = logger;
             _serviceProvider = serviceProvider;
             _cache = cache;
-            
+
             // Initialize the flush timer once
             InitializeFlushTimer();
         }
@@ -105,7 +106,12 @@ namespace PickURide.Infrastructure.Hub
                     DateTime = chatMessage.SentAt
                 };
 
+                // Primary event name used by Pick_U (rider app).
                 await Clients.Group(rideId.ToString()).SendAsync("ReceiveMessage", response);
+
+                // Back-compat event name used by pick_u_driver background tracking.
+                // Keep both to avoid breaking older mobile builds.
+                await Clients.Group(rideId.ToString()).SendAsync("ReceiveRideChatMessage", response);
             }
             finally
             {
