@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using PickURide.Application.Interfaces.Services;
 using PickURide.Application.Models;
 using PickURide.Infrastructure.Data;
 using PickURide.Infrastructure.Data.Entities;
+using PickURide.Infrastructure.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,6 +28,8 @@ namespace PickURide.Infrastructure.Hub
         private readonly ILogger<RideChatHub> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IMemoryCache _cache;
+        private readonly IPushNotificationService _pushNotification;
+        private readonly IUserRepository _userRepository;
         private static Timer _flushTimer;
         private static readonly object _timerLock = new object();
         private static bool _timerInitialized = false;
@@ -39,7 +43,9 @@ namespace PickURide.Infrastructure.Hub
             IDriverLocationService locationService,
             ILogger<RideChatHub> logger,
             IServiceProvider serviceProvider,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            IPushNotificationService pushNotification,
+            IUserRepository userRepository)
         {
             _chatCacheService = chatCacheService;
             _driverRepository = driverRepository;
@@ -47,6 +53,8 @@ namespace PickURide.Infrastructure.Hub
             _logger = logger;
             _serviceProvider = serviceProvider;
             _cache = cache;
+            _pushNotification = pushNotification;
+            _userRepository = userRepository;
 
             // Initialize the flush timer once
             InitializeFlushTimer();
@@ -112,10 +120,74 @@ namespace PickURide.Infrastructure.Hub
                 // Back-compat event name used by pick_u_driver background tracking.
                 // Keep both to avoid breaking older mobile builds.
                 await Clients.Group(rideId.ToString()).SendAsync("ReceiveRideChatMessage", response);
+
+                await SendRideChatPushAsync(rideId, senderId, senderRole, message);
             }
             finally
             {
                 gate.Release();
+            }
+        }
+
+        private async Task SendRideChatPushAsync(Guid rideId, Guid senderId, string? senderRole, string message)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var rideRepo = scope.ServiceProvider.GetRequiredService<IRideRepository>();
+                var ride = await rideRepo.GetEntityByIdAsync(rideId);
+                if (ride == null)
+                    return;
+
+                var role = (senderRole ?? string.Empty).Trim();
+                var preview = string.IsNullOrEmpty(message)
+                    ? "New message"
+                    : (message.Length <= 180 ? message : message[..180] + "…");
+
+                var data = new Dictionary<string, string>
+                {
+                    ["type"] = "ride_chat_message",
+                    ["rideId"] = rideId.ToString(),
+                    ["senderId"] = senderId.ToString(),
+                    ["senderRole"] = role
+                };
+
+                if (role.Equals("Rider", StringComparison.OrdinalIgnoreCase)
+                    || role.Equals("Passenger", StringComparison.OrdinalIgnoreCase))
+                {
+                    var driverId = ride.DriverId ?? Guid.Empty;
+                    if (driverId != Guid.Empty && driverId != senderId)
+                    {
+                        var token = await _driverRepository.GetDeviceTokenAsync(driverId);
+                        if (!string.IsNullOrWhiteSpace(token))
+                        {
+                            await _pushNotification.SendToTokenAsync(
+                                token,
+                                "New ride message",
+                                preview,
+                                data);
+                        }
+                    }
+                }
+                else if (role.Equals("Driver", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (ride.UserId != Guid.Empty && ride.UserId != senderId)
+                    {
+                        var token = await _userRepository.GetDeviceTokenAsync(ride.UserId);
+                        if (!string.IsNullOrWhiteSpace(token))
+                        {
+                            await _pushNotification.SendToTokenAsync(
+                                token,
+                                "New ride message",
+                                preview,
+                                data);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send ride chat push for ride {RideId}", rideId);
             }
         }
 
@@ -468,21 +540,51 @@ namespace PickURide.Infrastructure.Hub
         // Payment
         public async Task SendPaymentSuccess(string driverId, string userId, string message, decimal tipAmount, decimal totalAmount)
         {
-            // Notify the driver
-            await Clients.Group(driverId).SendAsync("ReceivePaymentSuccess", new
+            var payload = new
             {
                 Message = message,
                 TipAmount = tipAmount,
                 TotalAmount = totalAmount
-            });
+            };
 
-            // Notify the user
-            await Clients.Group(userId).SendAsync("ReceivePaymentSuccess", new
+            await Clients.Group(driverId).SendAsync("ReceivePaymentSuccess", payload);
+            await Clients.Group(userId).SendAsync("ReceivePaymentSuccess", payload);
+
+            if (Guid.TryParse(driverId, out var driverGuid))
             {
-                Message = message,
-                TipAmount = tipAmount,
-                TotalAmount = totalAmount
-            });
+                var driverToken = await _driverRepository.GetDeviceTokenAsync(driverGuid);
+                if (!string.IsNullOrWhiteSpace(driverToken))
+                {
+                    var tipStr = tipAmount.ToString(CultureInfo.InvariantCulture);
+                    var totalStr = totalAmount.ToString(CultureInfo.InvariantCulture);
+                    await _pushNotification.SendToTokenAsync(
+                        driverToken,
+                        "Payment received",
+                        $"Total: {totalStr} | Tip: {tipStr}",
+                        new Dictionary<string, string>
+                        {
+                            { "type", "payment_success" },
+                            { "userId", userId }
+                        });
+                }
+            }
+
+            if (Guid.TryParse(userId, out var userGuid))
+            {
+                var userToken = await _userRepository.GetDeviceTokenAsync(userGuid);
+                if (!string.IsNullOrWhiteSpace(userToken))
+                {
+                    await _pushNotification.SendToTokenAsync(
+                        userToken,
+                        "Payment done",
+                        message,
+                        new Dictionary<string, string>
+                        {
+                            { "type", "payment_success" },
+                            { "driverId", driverId }
+                        });
+                }
+            }
         }
 
         // Optional: Join group by user type/id

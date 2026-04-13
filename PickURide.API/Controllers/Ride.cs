@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PickURide.Application.Interfaces.Services;
 using PickURide.Application.Models;
+using PickURide.Application.Models.Drivers;
 
 namespace PickURide.API.Controllers
 {
@@ -182,6 +183,14 @@ namespace PickURide.API.Controllers
         public async Task<IActionResult> GetUserLastRide(Guid userId)
         {
             var ride = await _rideService.GetUserLastRide(userId);
+            if (ride is LastRideDto dto &&
+                !string.IsNullOrWhiteSpace(dto.PaymentStatus) &&
+                (string.Equals(dto.PaymentStatus, "completed", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(dto.PaymentStatus, "paid", StringComparison.OrdinalIgnoreCase)))
+            {
+                return NoContent();
+            }
+
             return Ok(ride);
         }
     }

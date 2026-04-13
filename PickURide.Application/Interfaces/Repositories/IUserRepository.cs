@@ -20,5 +20,6 @@ namespace PickURide.Application.Interfaces.Repositories
         Task<UpdateUserModel> SingleUser(Guid userId);
         Task<bool> ResetPasswordAsync(Guid Id, string newPassword);
         Task<bool> DeleteUserAsync(Guid userId);
+        Task<string?> GetDeviceTokenAsync(Guid userId);
     }
 }

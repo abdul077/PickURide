@@ -12,6 +12,7 @@ namespace PickURide.Application.Models.Drivers
         public Guid RideId { get; set; }
         public Guid? UserId { get; set; }
         public Guid? DriverId { get; set; }
+        public string DriverStripeAccountId { get; set; } = string.Empty;
         public Guid? PassengerId { get; set; }
         public string? PassengerName { get; set; }
         public string? PassengerPhone { get; set; }

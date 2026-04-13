@@ -436,6 +436,22 @@
   },
   {
     "ContainingType": "PickURide.API.Controllers.Drivers",
+    "Method": "UpdateFcmToken",
+    "RelativePath": "api/Drivers/fcm-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.FcmTokenRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.Drivers",
     "Method": "ForgotPassword",
     "RelativePath": "api/Drivers/forgot-password",
     "HttpMethod": "POST",
@@ -1845,6 +1861,22 @@
       {
         "Name": "userId",
         "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PickURide.API.Controllers.User",
+    "Method": "UpdateFcmToken",
+    "RelativePath": "api/User/fcm-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PickURide.Application.Models.FcmTokenRequest",
         "IsRequired": true
       }
     ],

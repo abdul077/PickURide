@@ -72,6 +72,7 @@ try
     builder.Services.AddScoped<IStripeService, StripeService>();
     builder.Services.AddScoped<IAuditLogService, PickURide.Infrastructure.Services.AuditLogService>();
     builder.Services.AddScoped<IPolicyService, PickURide.Infrastructure.Services.PolicyService>();
+    builder.Services.AddSingleton<IPushNotificationService, PushNotificationService>();
 
     // Register infrastructure services
     builder.Services.AddMemoryCache();

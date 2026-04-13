@@ -273,6 +273,14 @@ namespace PickURide.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<string?> GetDeviceTokenAsync(Guid userId)
+        {
+            return await _context.Users.AsNoTracking()
+                .Where(u => u.UserId == userId)
+                .Select(u => u.DeviceToken)
+                .FirstOrDefaultAsync();
+        }
     }
 
 }

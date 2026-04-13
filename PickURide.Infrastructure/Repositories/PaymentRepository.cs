@@ -460,6 +460,8 @@ namespace PickURide.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
 
+            transactions = FilterRidePaymentsPreferCompletedWhenAllStatesExist(transactions);
+
             var totalEarnings = transactions.Sum(t => t.DriverShare ?? 0);
             var totalTips = transactions.Sum(t => t.TipAmount ?? 0);
             var pendingAmount = transactions.Where(t => t.PaymentStatus != "Paid").Sum(t => t.DriverShare ?? 0);
@@ -475,6 +477,50 @@ namespace PickURide.Infrastructure.Repositories
                 Payment = transactions
             };
             return result;
+        }
+
+        /// <summary>
+        /// For a ride that has pending, held, and completed payment rows, return only the completed row (latest by CreatedAt if several).
+        /// When there is no completed row for a ride, return only the latest payment row for that ride (by CreatedAt, then PaymentId).
+        /// </summary>
+        private static List<PaymentDto> FilterRidePaymentsPreferCompletedWhenAllStatesExist(List<PaymentDto> transactions)
+        {
+            var withoutRideId = transactions.Where(t => !t.RideId.HasValue).ToList();
+            var filtered = new List<PaymentDto>(transactions.Count);
+            filtered.AddRange(withoutRideId);
+
+            foreach (var group in transactions.Where(t => t.RideId.HasValue).GroupBy(t => t.RideId!.Value))
+            {
+                var list = group.ToList();
+                var hasPending = list.Any(t => string.Equals(t.PaymentStatus, "pending", StringComparison.OrdinalIgnoreCase));
+                var hasHeld = list.Any(t => string.Equals(t.PaymentStatus, "held", StringComparison.OrdinalIgnoreCase));
+                var hasCompleted = list.Any(t => string.Equals(t.PaymentStatus, "completed", StringComparison.OrdinalIgnoreCase));
+
+                if (hasPending && hasHeld && hasCompleted)
+                {
+                    var completed = list
+                        .Where(t => string.Equals(t.PaymentStatus, "completed", StringComparison.OrdinalIgnoreCase))
+                        .OrderByDescending(t => t.CreatedAt)
+                        .FirstOrDefault();
+                    if (completed != null)
+                        filtered.Add(completed);
+                }
+                else if (!hasCompleted)
+                {
+                    var latest = list
+                        .OrderByDescending(t => t.CreatedAt)
+                        .ThenByDescending(t => t.PaymentId)
+                        .FirstOrDefault();
+                    if (latest != null)
+                        filtered.Add(latest);
+                }
+                else
+                {
+                    filtered.AddRange(list);
+                }
+            }
+
+            return filtered;
         }
 
         public Task<IEnumerable<PaymentDto>> GetAllAsync()
@@ -513,12 +559,27 @@ namespace PickURide.Infrastructure.Repositories
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
+            var rideIds = payments
+                .Where(p => p.RideId.HasValue)
+                .Select(p => p.RideId!.Value)
+                .Distinct()
+                .ToList();
+
+            var tipByRideId = await _context.Tips
+                .Where(t => t.RideId.HasValue && rideIds.Contains(t.RideId.Value))
+                .GroupBy(t => t.RideId!.Value)
+                .Select(g => new { RideId = g.Key, TotalTip = g.Sum(t => t.Amount ?? 0) })
+                .ToDictionaryAsync(x => x.RideId, x => x.TotalTip);
+
             var paymentDetails = new List<PaymentDetailDto>();
 
             foreach (var payment in payments)
             {
                 var pickupStop = payment.Ride?.RideStops?.OrderBy(s => s.StopOrder).FirstOrDefault();
                 var dropoffStop = payment.Ride?.RideStops?.OrderByDescending(s => s.StopOrder).FirstOrDefault();
+                var tipAmount = payment.RideId.HasValue && tipByRideId.TryGetValue(payment.RideId.Value, out var totalTipAmount)
+                   ? totalTipAmount
+                   : 0m;
 
                 var rideStops = payment.Ride?.RideStops?.Select(rs => new RideStopDto
                 {
@@ -536,7 +597,8 @@ namespace PickURide.Infrastructure.Repositories
                     RideId = payment.RideId,
                     PaymentMethod = payment.PaymentMethod,
                     PaidAmount = payment.PaidAmount,
-                    TipAmount = payment.TipAmount,
+                    //TipAmount = payment.TipAmount,
+                    TipAmount = tipAmount,
                     AdminShare = payment.AdminShare,
                     DriverShare = payment.DriverShare,
                     PaymentStatus = payment.PaymentStatus,
@@ -704,6 +766,18 @@ namespace PickURide.Infrastructure.Repositories
                 .Take(filter.PageSize)
                 .ToList();
 
+            var pagedRideIds = payments
+               .Where(p => p.RideId.HasValue)
+               .Select(p => p.RideId!.Value)
+               .Distinct()
+               .ToList();
+
+            var tipByRideId = await _context.Tips
+                .Where(t => t.RideId.HasValue && pagedRideIds.Contains(t.RideId.Value))
+                .GroupBy(t => t.RideId!.Value)
+                .Select(g => new { RideId = g.Key, TotalTip = g.Sum(t => t.Amount ?? 0) })
+                .ToDictionaryAsync(x => x.RideId, x => x.TotalTip);
+
             // Map to DTOs
             var paymentDetails = new List<PaymentDetailDto>();
 
@@ -711,6 +785,10 @@ namespace PickURide.Infrastructure.Repositories
             {
                 var pickupStop = payment.Ride?.RideStops?.OrderBy(s => s.StopOrder).FirstOrDefault();
                 var dropoffStop = payment.Ride?.RideStops?.OrderByDescending(s => s.StopOrder).FirstOrDefault();
+                var tipAmount = payment.RideId.HasValue && tipByRideId.TryGetValue(payment.RideId.Value, out var totalTipAmount)
+                   ? totalTipAmount
+                   : 0m;
+
 
                 var rideStops = payment.Ride?.RideStops?.Select(rs => new RideStopDto
                 {
@@ -728,7 +806,8 @@ namespace PickURide.Infrastructure.Repositories
                     RideId = payment.RideId,
                     PaymentMethod = payment.PaymentMethod,
                     PaidAmount = payment.PaidAmount,
-                    TipAmount = payment.TipAmount,
+                    //TipAmount = payment.TipAmount,
+                    TipAmount = tipAmount,
                     AdminShare = payment.AdminShare,
                     DriverShare = payment.DriverShare,
                     PaymentStatus = payment.PaymentStatus,
@@ -813,8 +892,8 @@ namespace PickURide.Infrastructure.Repositories
             var totalAdminShare = allRides.Sum(p => p.AdminShare ?? 0);
             var totalDriverShare = allRides.Sum(p => p.DriverShare ?? 0);
             var totalCompletedDriverShare = completedRides.Sum(p => p.DriverShare ?? 0);
-            var totalTips = allRides.Sum(p => p.TipAmount ?? 0);
-
+            //var totalTips = allRides.Sum(p => p.TipAmount ?? 0);
+            var totalTips = await _context.Tips.SumAsync(t => t.Amount ?? 0);
             var totalPayments = allRides.Count; // Now counting unique rides
             var totalCompletedPayments = completedRides.Count; // Now counting unique completed rides
             var dailyPayments = completedRides.Count(p => p.CreatedAt >= todayStart);
@@ -1085,7 +1164,7 @@ namespace PickURide.Infrastructure.Repositories
                  // Driver's earning for the ride (excluding tip)
                  FareFinal = paymentEntity.DriverShare ?? 0m,
                  // Tip (if any)
-                 Tip = paymentEntity.TipAmount ?? 0m,
+                 Tip = tipAmount,
                  // Total earning including tip (optional convenience for clients)
                  TotalAmount = (paymentEntity.DriverShare ?? 0m) + (paymentEntity.TipAmount ?? 0m)
              });

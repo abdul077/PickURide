@@ -29,3 +29,9 @@ E:\PickURide\PickURide.Infrastructure\obj\Debug\net9.0\PickURide.Infrastructure.
 E:\PickURide\PickURide.Infrastructure\obj\Debug\net9.0\refint\PickURide.Infrastructure.dll
 E:\PickURide\PickURide.Infrastructure\obj\Debug\net9.0\PickURide.Infrastructure.pdb
 E:\PickURide\PickURide.Infrastructure\obj\Debug\net9.0\ref\PickURide.Infrastructure.dll
+e:\PickURide\_build_out\infra\PickURide.Infrastructure.deps.json
+e:\PickURide\_build_out\infra\PickURide.Infrastructure.dll
+e:\PickURide\_build_out\infra\PickURide.Infrastructure.pdb
+e:\PickURide\_build_out\infra3\PickURide.Infrastructure.deps.json
+e:\PickURide\_build_out\infra3\PickURide.Infrastructure.dll
+e:\PickURide\_build_out\infra3\PickURide.Infrastructure.pdb

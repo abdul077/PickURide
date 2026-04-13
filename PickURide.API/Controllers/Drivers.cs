@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PickURide.Application.Interfaces.Repositories;
 using PickURide.Application.Interfaces.Services;
 using PickURide.Application.Models;
 using PickURide.Infrastructure.Services;
@@ -17,13 +18,15 @@ namespace PickURide.API.Controllers
         private readonly IEmailOTPService _emailOtpService;
         private readonly IDriverLocationService _locationService;
         private readonly ITokenBlacklistService _tokenBlacklistService;
+        private readonly IDriverRepository _driverRepository;
 
-        public Drivers(IDriverService driverService, IEmailOTPService emailOtpService, IDriverLocationService locationService, ITokenBlacklistService tokenBlacklistService)
+        public Drivers(IDriverService driverService, IEmailOTPService emailOtpService, IDriverLocationService locationService, ITokenBlacklistService tokenBlacklistService, IDriverRepository driverRepository)
         {
             _driverService = driverService;
             _emailOtpService = emailOtpService;
             _locationService = locationService;
             _tokenBlacklistService = tokenBlacklistService;
+            _driverRepository = driverRepository;
         }
         [HttpPost("register")]
         [AllowAnonymous]
@@ -40,6 +43,21 @@ namespace PickURide.API.Controllers
                 await _emailOtpService.SendOtpAsync(request.Email, otp);
                 return Ok(new { message = "User registered. OTP sent to email" });
             }
+        }
+
+        [HttpPost("fcm-token")]
+        [Authorize]
+        public async Task<IActionResult> UpdateFcmToken([FromBody] FcmTokenRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.FcmToken))
+                return BadRequest(new { message = "FcmToken is required" });
+
+            var driverIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(driverIdClaim, out var driverId))
+                return Unauthorized();
+
+            await _driverRepository.UpdateToken(driverId, request.FcmToken);
+            return Ok();
         }
 
         [HttpPost("login")]

@@ -877,6 +877,7 @@ namespace PickURide.Infrastructure.Repositories
                 RideId = ride.RideId,
                 UserId = ride.UserId,
                 DriverId = ride.DriverId,
+                DriverStripeAccountId = ride.Driver?.StripeAccountId ?? string.Empty,
                 PassengerId = ride.UserId,
                 PassengerName = ride.User?.FullName,
                 PassengerPhone = ride.User?.PhoneNumber,

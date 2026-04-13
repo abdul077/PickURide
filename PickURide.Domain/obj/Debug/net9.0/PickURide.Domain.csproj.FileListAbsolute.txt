@@ -9,3 +9,15 @@ D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domai
 D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Debug\net9.0\refint\PickURide.Domain.dll
 D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.pdb
 D:\CodyTech Projects\PickURide\PickURide.Domain\obj\Debug\net9.0\ref\PickURide.Domain.dll
+e:\PickURide\PickURide.Domain\bin\Debug\net9.0\PickURide.Domain.deps.json
+e:\PickURide\PickURide.Domain\bin\Debug\net9.0\PickURide.Domain.dll
+e:\PickURide\PickURide.Domain\bin\Debug\net9.0\PickURide.Domain.pdb
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.GeneratedMSBuildEditorConfig.editorconfig
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.AssemblyInfoInputs.cache
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.AssemblyInfo.cs
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.csproj.CoreCompileInputs.cache
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.sourcelink.json
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.dll
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\refint\PickURide.Domain.dll
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\PickURide.Domain.pdb
+e:\PickURide\PickURide.Domain\obj\Debug\net9.0\ref\PickURide.Domain.dll

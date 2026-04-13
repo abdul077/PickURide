@@ -187,7 +187,7 @@ namespace PickURide.Infrastructure.Services
                 Email = user.Email ?? string.Empty,
                 FullName = user.FullName ?? string.Empty,
                 Message = "Login successful",
-                ApprovalStatus = "Approved",
+                ApprovalStatus = user.ApprovalStatus,
                 StripeAccountId = user.StripeAccountId,
                 RideStatus=user.Status
             };

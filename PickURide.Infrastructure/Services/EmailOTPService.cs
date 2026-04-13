@@ -31,7 +31,7 @@ public class EmailOTPService : IEmailOTPService
 
         var json = JsonSerializer.Serialize(payload);
         using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("api-key", apiKey);
+        client.DefaultRequestHeaders.Add("api-key", apiKey); 
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await client.PostAsync("https://api.brevo.com/v3/smtp/email", content);

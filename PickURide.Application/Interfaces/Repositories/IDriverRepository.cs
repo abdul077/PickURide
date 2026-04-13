@@ -37,6 +37,7 @@ namespace PickURide.Application.Interfaces.Repositories
         Task<bool> UpdateDriverDetailsAsync(UpdateDriverDetailsRequest request, CancellationToken cancellationToken);
         Task<bool> DeleteDriverAsync(Guid driverId);
         Task<bool> UpdateStripeAccountIdAsync(Guid driverId, string stripeAccountId);
+        Task<string?> GetDeviceTokenAsync(Guid driverId);
 
     }
 }

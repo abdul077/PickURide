@@ -353,3 +353,12 @@ E:\PickURide\PickURide.API\obj\Release\net9.0\refint\PickURide.API.dll
 E:\PickURide\PickURide.API\obj\Release\net9.0\PickURide.API.pdb
 E:\PickURide\PickURide.API\obj\Release\net9.0\PickURide.API.genruntimeconfig.cache
 E:\PickURide\PickURide.API\obj\Release\net9.0\ref\PickURide.API.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\firebase-adminsdk.json
+E:\PickURide\PickURide.API\bin\Release\net9.0\FirebaseAdmin.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\Google.Api.Gax.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\Google.Api.Gax.Rest.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\Google.Apis.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\Google.Apis.Auth.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\Google.Apis.Core.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\System.Management.dll
+E:\PickURide\PickURide.API\bin\Release\net9.0\runtimes\win\lib\net7.0\System.Management.dll

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,7 @@ namespace PickURide.Infrastructure.Services
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IStripeService _stripeService;
+        private readonly IPushNotificationService _pushNotificationService;
         private readonly ILogger<RideService> _logger;
 
         public RideService(IUnitOfWork unitOfWork, IDriverLocationService driverLocationService,
@@ -35,6 +37,7 @@ namespace PickURide.Infrastructure.Services
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory,
             IStripeService stripeService,
+            IPushNotificationService pushNotificationService,
             ILogger<RideService> logger)
         {
             _unitOfWork = unitOfWork;
@@ -47,6 +50,7 @@ namespace PickURide.Infrastructure.Services
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
             _stripeService = stripeService;
+            _pushNotificationService = pushNotificationService;
             _logger = logger;
         }
 
@@ -518,10 +522,29 @@ namespace PickURide.Infrastructure.Services
                       ride.Status,
                       DriverName = driver?.FullName,
                       DriverPhone = driver?.PhoneNumber,
-                      ride.FareEstimate,
+                      ride.FareFinal,
                       ride.TotalWaitingTime,
                       Tip=tip
                   });
+
+                string? passengerToken = null;
+                if (ride.UserId != Guid.Empty)
+                    passengerToken = await _unitOfWork.UserRepository.GetDeviceTokenAsync(ride.UserId);
+                if (!string.IsNullOrWhiteSpace(passengerToken))
+                {
+                    var fareText = finalFare.ToString("C", CultureInfo.InvariantCulture);
+                    await _pushNotificationService.SendToTokenAsync(
+                        passengerToken,
+                        "Ride complete",
+                        $"Please complete payment. Total: {fareText}",
+                        new Dictionary<string, string>
+                        {
+                            { "type", "ride_completed" },
+                            { "rideId", rideId.ToString() },
+                            { "action", "PAY_NOW" }
+                        });
+                }
+
                 return new
                 {
                     RideId = ride.RideId,
@@ -767,8 +790,17 @@ namespace PickURide.Infrastructure.Services
             if (ride.Status == "Cancelled")
                 return "Ride is already cancelled.";
 
-            var payment = _paymentRepository.GetByRideIdAsync(rideId);
-            await CreatePrepaidPaymentAsync(ride, Convert.ToDecimal(payment.Result.PaidAmount), Convert.ToDecimal(payment.Result.AdminShare), Convert.ToDecimal(payment.Result.DriverShare), payment.Result.PaymentToken, "cancelled", "cancelled");
+            var payment = await _paymentRepository.GetByRideIdAsync(rideId);
+            if (payment != null)
+            {
+                await CreatePrepaidPaymentAsync(ride,
+                    Convert.ToDecimal(payment.PaidAmount ?? 0),
+                    Convert.ToDecimal(payment.AdminShare ?? 0),
+                    Convert.ToDecimal(payment.DriverShare ?? 0),
+                    payment.PaymentToken,
+                    "cancelled",
+                    "cancelled");
+            }
 
             // Cancel the ride
             var result = await _unitOfWork.RideRepository.CancelRideAsync(rideId);
@@ -791,6 +823,24 @@ namespace PickURide.Infrastructure.Services
                     RideId = ride.RideId,
                     Status = "Cancelled"
                 });
+
+            var totalAmount = payment?.PaidAmount ?? ride.FareFinal ?? 0m;
+            var totalAmountStr = totalAmount.ToString("F2", CultureInfo.InvariantCulture);
+            var passengerToken = await _unitOfWork.UserRepository.GetDeviceTokenAsync(ride.UserId);
+            if (!string.IsNullOrWhiteSpace(passengerToken))
+            {
+                await _pushNotificationService.SendToTokenAsync(
+                    passengerToken,
+                    "Ride ended",
+                    $"Ride has been ended by the driver. {totalAmountStr} has been deducted from your account.",
+                    new Dictionary<string, string>
+                    {
+                        ["rideId"] = rideId.ToString(),
+                        ["type"] = "ride_ended_by_driver",
+                        ["totalAmount"] = totalAmountStr,
+                        ["status"] = "Cancelled"
+                    });
+            }
 
             return result;
         }
@@ -903,7 +953,7 @@ namespace PickURide.Infrastructure.Services
                {
                    RideId = ride.RideId,
                    Status = arrivedStatus,
-                   FareEstimate = ride.FareEstimate,
+                   FareEstimate = ride.FareFinal,
                });
 
             if (ride.DriverId.HasValue)
@@ -968,7 +1018,7 @@ namespace PickURide.Infrastructure.Services
                    Status = status,
                    DriverName = driver?.FullName ?? "Unknown",
                    DriverPhone = driver?.PhoneNumber ?? "Unknown",
-                   FareEstimate = ride.FareEstimate,
+                   FareEstimate = ride.FareFinal,
                    WaitingTime = waitingTime
                });
             if (ride.DriverId.HasValue)
@@ -1003,6 +1053,9 @@ namespace PickURide.Infrastructure.Services
 
             var updateResult = await _unitOfWork.RideRepository.SetWaitingTime(rideId, waitingTime, status);
 
+            var allFareSettings = await _unitOfWork.FareSettingRepository.GetAllFareSettingsWithSlabsAsync();
+            var fareConfigurations = allFareSettings.Select(MapFareConfigurationResponse).ToList();
+
             var updatedRide = await _unitOfWork.RideRepository.GetEntityByIdAsync(rideId);
             if (updatedRide == null)
             {
@@ -1010,41 +1063,88 @@ namespace PickURide.Infrastructure.Services
                 {
                     Message = updateResult,
                     TotalWaitingTime = "00:00",
-                    TotalWaitingTimeCharges = 0m
+                    TotalWaitingTimeMinutes = 0,
+                    FreeWaitingMinutes = 5,
+                    IsFirstFiveMinutesFree = true,
+                    BillableWaitingMinutes = 0,
+                    TotalWaitingTimeCharges = 0m,
+                    FareConfigurations = fareConfigurations,
+                    MatchedFareConfiguration = (object?)null,
+                    WaitingTimeChargeBreakdown = (object?)null
                 };
             }
 
             int totalWaitingMinutes = 0;
-            if (updatedRide.TotalWaitingTime is TimeOnly totalWaitingTime)
-                totalWaitingMinutes = totalWaitingTime.Hour * 60 + totalWaitingTime.Minute;
+            if (updatedRide.TotalWaitingTime.HasValue &&
+                updatedRide.TotalWaitingTime.Value != TimeOnly.MinValue)
+            {
+                var tw = updatedRide.TotalWaitingTime.Value;
+                totalWaitingMinutes = tw.Hour * 60 + tw.Minute + (tw.Second > 0 ? 1 : 0);
+            }
 
-            decimal waitingCharges = 0m;
             const int freeWaitingMinutes = 5;
             int billableWaitingMinutes = Math.Max(totalWaitingMinutes - freeWaitingMinutes, 0);
+
+            FareSettings? matchedFare = null;
+            decimal perMinuteRate = 0m;
+            decimal waitingCharges = 0m;
+
             var updatedPickupStop = updatedRide.RideStops?.OrderBy(s => s.StopOrder).FirstOrDefault();
             if (updatedPickupStop != null)
             {
                 string pickupLocation = updatedPickupStop.Location ?? "";
-                var allFareSettings = await _unitOfWork.FareSettingRepository.GetAllFareSettingsWithSlabsAsync();
-                var fareSettings = allFareSettings
+                matchedFare = allFareSettings
                     .FirstOrDefault(f => !string.IsNullOrEmpty(f.AreaType) &&
                                          pickupLocation.Contains(f.AreaType, StringComparison.OrdinalIgnoreCase));
 
-                if (fareSettings != null)
+                if (matchedFare != null)
                 {
-                    decimal perMinute = fareSettings.PerMinuteRate ?? 0m;
-                    waitingCharges = perMinute * billableWaitingMinutes;
+                    perMinuteRate = matchedFare.PerMinuteRate ?? 0m;
+                    waitingCharges = perMinuteRate * billableWaitingMinutes;
                 }
             }
+
+            waitingCharges = Math.Round(waitingCharges, 2, MidpointRounding.AwayFromZero);
 
             return new
             {
                 Message = updateResult,
                 TotalWaitingTime = $"{totalWaitingMinutes / 60:D2}:{totalWaitingMinutes % 60:D2}",
+                TotalWaitingTimeMinutes = totalWaitingMinutes,
                 FreeWaitingMinutes = freeWaitingMinutes,
                 IsFirstFiveMinutesFree = true,
                 BillableWaitingMinutes = billableWaitingMinutes,
-                TotalWaitingTimeCharges = waitingCharges
+                TotalWaitingTimeCharges = waitingCharges,
+                FareConfigurations = fareConfigurations,
+                MatchedFareConfiguration = matchedFare != null ? MapFareConfigurationResponse(matchedFare) : null,
+                WaitingTimeChargeBreakdown = new
+                {
+                    PerMinuteRate = perMinuteRate,
+                    BillableWaitingMinutes = billableWaitingMinutes,
+                    Charge = waitingCharges,
+                    Description = "Billable waiting minutes × PerMinuteRate from matched fare configuration (first 5 minutes free)."
+                }
+            };
+        }
+
+        private static object MapFareConfigurationResponse(FareSettings f)
+        {
+            return new
+            {
+                f.SettingId,
+                f.AreaType,
+                f.BaseFare,
+                f.PerKmRate,
+                f.PerMinuteRate,
+                f.AdminPercentage,
+                Slabs = f.Slabs?.Select(s => new
+                {
+                    s.SlabId,
+                    s.FromKm,
+                    s.ToKm,
+                    s.RatePerKm,
+                    s.SortOrder
+                }).ToList()
             };
         }
 

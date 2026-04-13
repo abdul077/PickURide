@@ -23,3 +23,12 @@ E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.dll
 E:\PickURide\PickURide.Application\obj\Debug\net9.0\refint\PickURide.Application.dll
 E:\PickURide\PickURide.Application\obj\Debug\net9.0\PickURide.Application.pdb
 E:\PickURide\PickURide.Application\obj\Debug\net9.0\ref\PickURide.Application.dll
+e:\PickURide\_build_out\infra\PickURide.Application.deps.json
+e:\PickURide\_build_out\infra\PickURide.Application.dll
+e:\PickURide\_build_out\infra\PickURide.Application.pdb
+e:\PickURide\_build_out\infra2\PickURide.Application.deps.json
+e:\PickURide\_build_out\infra2\PickURide.Application.dll
+e:\PickURide\_build_out\infra2\PickURide.Application.pdb
+e:\PickURide\_build_out\infra3\PickURide.Application.deps.json
+e:\PickURide\_build_out\infra3\PickURide.Application.dll
+e:\PickURide\_build_out\infra3\PickURide.Application.pdb

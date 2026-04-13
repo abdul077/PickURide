@@ -562,6 +562,14 @@ namespace PickURide.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<string?> GetDeviceTokenAsync(Guid driverId)
+        {
+            return await _context.Drivers.AsNoTracking()
+                .Where(d => d.DriverId == driverId)
+                .Select(d => d.DeviceToken)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<bool> UploadImages(UploadDriverImagesRequest request, CancellationToken cancellationToken)
         {
             var driver = await _context.Drivers

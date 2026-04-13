@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using PickURide.Application.Interfaces.Repositories;
+using System.Security.Claims;
 namespace PickURide.API.Controllers
 {
     [Route("api/[controller]")]
@@ -21,15 +22,17 @@ namespace PickURide.API.Controllers
         private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly IRideService _rideService;
         private readonly IPromoRepository _promoRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public User(IUserService userService, IEmailOTPService emailOtpService, ITokenBlacklistService tokenBlacklistService, IRideService rideService, IPromoRepository promoRepository)
+        public User(IUserService userService, IEmailOTPService emailOtpService, ITokenBlacklistService tokenBlacklistService, IRideService rideService, IPromoRepository promoRepository, IUserRepository userRepository)
         {
             _userService = userService;
             _emailOtpService = emailOtpService;
             _tokenBlacklistService = tokenBlacklistService;
             _rideService = rideService;
             _promoRepository = promoRepository;
+            _userRepository = userRepository;
         }
         [HttpPost("register")]
         [AllowAnonymous]
@@ -46,6 +49,21 @@ namespace PickURide.API.Controllers
                 await _emailOtpService.SendOtpAsync(request.Email, otp);
                 return Ok(new { message = "OTP sent to email" });
             }
+        }
+
+        [HttpPost("fcm-token")]
+        [Authorize]
+        public async Task<IActionResult> UpdateFcmToken([FromBody] FcmTokenRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.FcmToken))
+                return BadRequest(new { message = "FcmToken is required" });
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            await _userRepository.UpdateToken(userId, request.FcmToken);
+            return Ok();
         }
 
         [HttpPost("login")]
@@ -339,6 +357,7 @@ namespace PickURide.API.Controllers
                     passengerCount = rideDto.PassengerCount ?? 0,
                     fareEstimate = rideDto.FareEstimate ?? 0.0m,
                     paymentToken = rideDto.PaymentIntentId ?? string.Empty,
+                    driverStripeAccountId = rideDto.DriverStripeAccountId ?? string.Empty,
                     stops = stops
                 };
 

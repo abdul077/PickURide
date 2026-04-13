@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PickURide.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37b12ef776c676985841b500c179143fad0c7b78")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7330be151164243a16f55865e468a13b4f2c1ba3")]
 [assembly: System.Reflection.AssemblyProductAttribute("PickURide.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PickURide.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

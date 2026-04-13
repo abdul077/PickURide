@@ -415,6 +415,37 @@
         }
       }
     },
+    "/api/Drivers/fcm-token": {
+      "post": {
+        "tags": [
+          "Drivers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Drivers/login": {
       "post": {
         "tags": [
@@ -2902,6 +2933,37 @@
         }
       }
     },
+    "/api/User/fcm-token": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FcmTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/User/login": {
       "post": {
         "tags": [
@@ -3692,6 +3754,16 @@
             "items": {
               "$ref": "#/components/schemas/FareDistanceSlabDto"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FcmTokenRequest": {
+        "type": "object",
+        "properties": {
+          "fcmToken": {
+            "type": "string",
             "nullable": true
           }
         },

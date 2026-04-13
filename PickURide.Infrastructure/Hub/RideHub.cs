@@ -1,9 +1,12 @@
-﻿
+﻿using System.Globalization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using PickURide.Application.Interfaces.Repositories;
 using PickURide.Application.Interfaces.Services;
 using PickURide.Application.Models;
+using PickURide.Infrastructure.Services;
+
 namespace PickURide.Infrastructure.Hub
 {
     public class RideHub : Microsoft.AspNetCore.SignalR.Hub
@@ -11,12 +14,24 @@ namespace PickURide.Infrastructure.Hub
         private readonly IDriverLocationService _locationService;
         private readonly IMemoryCache _cache;
         private readonly ILogger<RideHub> _logger;
+        private readonly IPushNotificationService _pushNotification;
+        private readonly IUserRepository _userRepository;
+        private readonly IDriverRepository _driverRepository;
 
-        public RideHub(IDriverLocationService locationService, IMemoryCache cache, ILogger<RideHub> logger)
+        public RideHub(
+            IDriverLocationService locationService,
+            IMemoryCache cache,
+            ILogger<RideHub> logger,
+            IPushNotificationService pushNotification,
+            IUserRepository userRepository,
+            IDriverRepository driverRepository)
         {
             _locationService = locationService;
             _cache = cache;
             _logger = logger;
+            _pushNotification = pushNotification;
+            _userRepository = userRepository;
+            _driverRepository = driverRepository;
         }
         public async Task SubscribeToRide(Guid rideId)
         {
@@ -105,21 +120,51 @@ namespace PickURide.Infrastructure.Hub
         //Payment
         public async Task SendPaymentSuccess(string driverId, string userId, string message, decimal tipAmount, decimal totalAmount)
         {
-            // Notify the driver
-            await Clients.Group(driverId).SendAsync("ReceivePaymentSuccess", new
+            var payload = new
             {
                 Message = message,
                 TipAmount = tipAmount,
                 TotalAmount = totalAmount
-            });
+            };
 
-            // Notify the user
-            await Clients.Group(userId).SendAsync("ReceivePaymentSuccess", new
+            await Clients.Group(driverId).SendAsync("ReceivePaymentSuccess", payload);
+            await Clients.Group(userId).SendAsync("ReceivePaymentSuccess", payload);
+
+            if (Guid.TryParse(driverId, out var driverGuid))
             {
-                Message = message,
-                TipAmount = tipAmount,
-                TotalAmount = totalAmount
-            });
+                var driverToken = await _driverRepository.GetDeviceTokenAsync(driverGuid);
+                if (!string.IsNullOrWhiteSpace(driverToken))
+                {
+                    var tipStr = tipAmount.ToString(CultureInfo.InvariantCulture);
+                    var totalStr = totalAmount.ToString(CultureInfo.InvariantCulture);
+                    await _pushNotification.SendToTokenAsync(
+                        driverToken,
+                        "Payment received",
+                        $"Total: {totalStr} | Tip: {tipStr}",
+                        new Dictionary<string, string>
+                        {
+                            { "type", "payment_success" },
+                            { "userId", userId }
+                        });
+                }
+            }
+
+            if (Guid.TryParse(userId, out var userGuid))
+            {
+                var userToken = await _userRepository.GetDeviceTokenAsync(userGuid);
+                if (!string.IsNullOrWhiteSpace(userToken))
+                {
+                    await _pushNotification.SendToTokenAsync(
+                        userToken,
+                        "Payment done",
+                        message,
+                        new Dictionary<string, string>
+                        {
+                            { "type", "payment_success" },
+                            { "driverId", driverId }
+                        });
+                }
+            }
         }
 
         // Optional: Join group by user type/id
